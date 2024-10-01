@@ -1,0 +1,22 @@
+@import "../variables.scss";
+
+.column {
+  padding-top: $column-top-padding;
+}
+
+.day_column{
+  min-width: 7rem;
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.hours_column {
+  width: 40px;
+  min-width: 2rem;
+  padding-top: 0;
+  margin-top: calc(-0.75rem + ($header-cell-height - 2rem) - ($hour-cell-height - 4rem));
+}
+
+.background {
+  background-color: $background-color;
+}

@@ -1,0 +1,14 @@
+@import "../variables.scss";
+
+.header-cell{
+  height: $header-cell-height;
+  border: 1px solid black;
+  border-top: none;
+  border-bottom: none;
+}
+
+.hour-cell {
+  height: $hour-cell-height;
+  border: 1px solid black;
+  border-bottom: none;
+}

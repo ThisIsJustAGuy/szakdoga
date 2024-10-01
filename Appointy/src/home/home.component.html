@@ -1,1 +1,10 @@
-<p>home works!</p>
+
+<div class="d-flex flex-row background">
+  <div class="column hours_column">
+    <app-hours-column/>
+  </div>
+  @for (day of days; track $index) {
+  <app-calendar-column [day]="day" [date]="dates[$index]" class="column day_column"/>
+  }
+</div>
+
