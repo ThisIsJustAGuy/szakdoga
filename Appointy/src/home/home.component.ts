@@ -21,8 +21,6 @@ export class HomeComponent {
   middleDate: Date; // Ez alapján döntjük el milyen hónap van
   currentDay: number = 0;
   startDate: number = 0;
-  // lastDayOfLastMonth: number = 0;
-  // lastDayOfThisMonth: number = 0;
   prevMonthUsed: boolean = false;
   clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
 
