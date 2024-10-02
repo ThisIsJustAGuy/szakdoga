@@ -1,10 +1,18 @@
-
-<div class="d-flex flex-row background">
-  <div class="column hours_column">
-    <app-hours-column/>
+<div class="d-flex flex-column">
+  <div class="d-flex flex-row justify-content-center align-items-center my-2">
+    <button class="me-4 btn btn-secondary btn-sm" (click)="prevWeek()"><</button>
+    <h4 class="m-0 date_display">{{ currentDate.getFullYear() }} {{middleDate.toLocaleDateString(locale, { month: 'long' })}}</h4>
+    <button class="ms-4 btn btn-secondary btn-sm" (click)="nextWeek()">></button>
   </div>
-  @for (day of days; track $index) {
-  <app-calendar-column [day]="day" [date]="dates[$index]" class="column day_column"/>
-  }
+
+
+  <div class="d-flex flex-row background">
+    <div class="column hours_column">
+      <app-hours-column/>
+    </div>
+    @for (day of weekdays; track $index) {
+      <app-calendar-column [day]="day" [date]="dates[$index]" class="column day_column"/>
+    }
+  </div>
 </div>
 

@@ -17,6 +17,11 @@
   margin-top: calc(-0.75rem + ($header-cell-height - 2rem) - ($hour-cell-height - 4rem));
 }
 
+.date_display {
+  min-width: 200px;
+  text-align: center;
+}
+
 .background {
   background-color: $background-color;
 }

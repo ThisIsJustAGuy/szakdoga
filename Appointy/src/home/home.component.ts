@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {CalendarColumnComponent} from "../calendar-column/calendar-column.component";
-import {HoursColumnComponent} from "../hours-column/hours-column.component";
+import {Component} from '@angular/core';
+import {CalendarColumnComponent} from "../columns/calendar-column/calendar-column.component";
+import {HoursColumnComponent} from "../columns/hours-column/hours-column.component";
 
 @Component({
   selector: 'app-home',
@@ -13,46 +13,79 @@ import {HoursColumnComponent} from "../hours-column/hours-column.component";
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  days: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  weekdays: string[] = [];
   dates: number[] = [];
-  today: Date = new Date();
+  locale: string = "hu-HU";
+  currentDate: Date;
+  middleDate: Date; // Ez alapján döntjük el milyen hónap van
   currentDay: number = 0;
   startDate: number = 0;
-  lastDayOfLastMonth: number = 0;
-  lastDayOfThisMonth: number = 0;
-  date: number = 0;
+  // lastDayOfLastMonth: number = 0;
+  // lastDayOfThisMonth: number = 0;
   prevMonthUsed: boolean = false;
-  nextMonthUsed: boolean = false;
 
   constructor() {
-    this.today = new Date();
-    this.getDatesOfWeek();
+    this.currentDate = new Date();
+    this.middleDate = new Date();
+    this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
+
+    this.fillWeekDays('hu-HU');
+    this.fillDatesOfWeek();
   }
 
-  getDatesOfWeek() {
-    let currentDate: number = this.today.getDate();
-    this.currentDay = this.today.getDay();
-
-    this.startDate = currentDate - (this.currentDay != 0 ? this.currentDay : 7) + 1;
-
-    if (this.startDate < 1) {
-      this.lastDayOfLastMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 0).getDate();
-      this.prevMonthUsed = true;
-      this.today.getMonth()
+  fillWeekDays(locale: string) {
+    let baseDate: Date = new Date(Date.UTC(2017, 0, 2)); //csak egy hétfői nap
+    for (let i: number = 0; i < 7; i++) {
+      let day: string = baseDate.toLocaleDateString(locale, {weekday: 'long'});
+      day = day[0].toUpperCase() + day.slice(1);
+      this.weekdays.push(day);
+      baseDate.setDate(baseDate.getDate() + 1);
     }
-    this.startDate = this.lastDayOfLastMonth + this.startDate;
-    this.date = this.startDate - 1;
-    this.lastDayOfThisMonth = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0).getDate();
+  }
 
-    for (let i = 0; i < this.days.length; i++) {
-      if (this.prevMonthUsed && this.lastDayOfLastMonth < this.date + 1) {
-        this.date = 1;
-      } else if (this.nextMonthUsed && this.lastDayOfThisMonth < this.date + 1) {
-        this.date = 1;
+  prevWeek() {
+    this.stepWeek(-1);
+  }
+
+  nextWeek() {
+    this.stepWeek(1);
+  }
+
+  stepWeek(amount: number) {
+    amount *= 7;
+    this.currentDate.setDate(this.currentDate.getDate() + amount);
+    this.middleDate.setDate(this.middleDate.getDate() + amount);
+
+    this.fillDatesOfWeek()
+  }
+
+  fillDatesOfWeek() {
+    this.dates = [];
+    this.prevMonthUsed = false;
+
+    let currentDateDay: number = this.currentDate.getDate();
+    this.currentDay = this.currentDate.getDay();
+    this.startDate = currentDateDay - (this.currentDay != 0 ? this.currentDay : 7) + 1;
+
+    let lastDayOfLastMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 0).getDate();
+    if (this.startDate < 1) { // hét eleje még az előző hónap
+      this.prevMonthUsed = true;
+      this.startDate = lastDayOfLastMonth + this.startDate;
+    }
+
+    let date: number = this.startDate - 1;
+    let lastDayOfThisMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0).getDate();
+
+
+    for (let i = 0; i < this.weekdays.length; i++) {
+      if (this.prevMonthUsed && lastDayOfLastMonth < date + 1) { // átlépünk az előző hónap végéről elsejére
+        date = 1;
+      } else if (lastDayOfThisMonth < date + 1) { // átlépünk az akt. hónap végéről a köv. hónap elsejére
+        date = 1;
       } else {
-        this.date++;
+        date++;
       }
-      this.dates.push(this.date);
+      this.dates.push(date);
     }
   }
 }
