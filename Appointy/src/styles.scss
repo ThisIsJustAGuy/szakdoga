@@ -12,17 +12,12 @@ html, body {
 }
 //tesztelésre
 
-
-
-.global_position {
-  height: 100%;
-  width: 100%;
-}
-
-.asd{
+.global_size{
   //height: 200px;
   //width: 400px;
-  min-height: 200px;
-  min-width: 400px;
+  //height: 100%;
+  //width: 100%;
+  min-height: 300px;
+  min-width: 500px;
   overflow: auto;
 }

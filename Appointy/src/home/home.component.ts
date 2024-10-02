@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {CalendarColumnComponent} from "../columns/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../columns/hours-column/hours-column.component";
+import {CalendarServiceService} from "../services/calendar-service.service";
 
 @Component({
   selector: 'app-home',
@@ -23,14 +24,22 @@ export class HomeComponent {
   // lastDayOfLastMonth: number = 0;
   // lastDayOfThisMonth: number = 0;
   prevMonthUsed: boolean = false;
+  clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
 
-  constructor() {
+  constructor(private calendarService: CalendarServiceService) {
     this.currentDate = new Date();
     this.middleDate = new Date();
     this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
 
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
+    this.initCalendarClient();
+
+  }
+
+  async initCalendarClient(){
+    await this.calendarService.initClient();
+    this.calendarService.getCalendarEvents(this.clientID).subscribe(res => console.log(res));
   }
 
   fillWeekDays(locale: string) {
