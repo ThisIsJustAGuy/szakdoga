@@ -1,14 +1,16 @@
 import {Component} from '@angular/core';
-import {CalendarColumnComponent} from "../columns/calendar-column/calendar-column.component";
-import {HoursColumnComponent} from "../columns/hours-column/hours-column.component";
+import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
+import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
 import {CalendarServiceService} from "../services/calendar-service.service";
+import {WeekdayComponent} from "../components/weekday/weekday.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CalendarColumnComponent,
-    HoursColumnComponent
+    HoursColumnComponent,
+    WeekdayComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -29,15 +31,23 @@ export class HomeComponent {
     this.middleDate = new Date();
     this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
 
+    this.initCalendarClient();
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
-    this.initCalendarClient();
 
   }
 
   async initCalendarClient(){
-    await this.calendarService.initClient();
-    this.calendarService.getCalendarEvents(this.clientID).subscribe(res => console.log(res));
+    await this.calendarService.initClient()
+      .then(() => this.calendarService.getCalendarEvents(this.clientID)
+          .subscribe(res => this.displayEvents(res)));
+  }
+
+  displayEvents(res: any) {
+    console.log(res);
+    for (const r of res) {
+      console.log(r.summary + ": " + r.description + "; " + r.location + ";;" + r.start.dateTime + ";;" + r.end.dateTime);
+    }
   }
 
   fillWeekDays(locale: string) {
@@ -48,6 +58,7 @@ export class HomeComponent {
       this.weekdays.push(day);
       baseDate.setDate(baseDate.getDate() + 1);
     }
+    console.log(this.weekdays);
   }
 
   prevWeek() {
@@ -70,18 +81,18 @@ export class HomeComponent {
     this.dates = [];
     this.prevMonthUsed = false;
 
-    let currentDateDay: number = this.currentDate.getDate();
+    const currentDateDay: number = this.currentDate.getDate();
     this.currentDay = this.currentDate.getDay();
     this.startDate = currentDateDay - (this.currentDay != 0 ? this.currentDay : 7) + 1;
 
-    let lastDayOfLastMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 0).getDate();
+    const lastDayOfLastMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 0).getDate();
     if (this.startDate < 1) { // hét eleje még az előző hónap
       this.prevMonthUsed = true;
       this.startDate = lastDayOfLastMonth + this.startDate;
     }
 
     let date: number = this.startDate - 1;
-    let lastDayOfThisMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0).getDate();
+    const lastDayOfThisMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0).getDate();
 
 
     for (let i = 0; i < this.weekdays.length; i++) {

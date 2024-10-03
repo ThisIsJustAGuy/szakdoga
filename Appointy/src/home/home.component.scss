@@ -1,25 +1,51 @@
 @import "../variables.scss";
 
-.column {
+.grow{
+  min-width: $column-width;
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.fullscreen_lite {
+  width: 100vw;
+  height: calc(100vh - $date-container-height - $column-top-padding - $hour-cell-height);
+}
+
+.scrollable {
+  overflow-y: auto;
+  min-width: $min-width;
+  max-height: calc(100% - $column-top-padding - $hour-cell-height - $date-container-height);
+  min-height: 100%;
+}
+
+.weekdays{
   padding-top: $column-top-padding;
+  min-width: $column-width;
+  min-height: $header-cell-height;
+  flex-basis: 0;
+  flex-grow: 1;
 }
 
 .day_column{
-  min-width: 7rem;
+  min-width: $column-width;
   flex-basis: 0;
   flex-grow: 1;
 }
 
 .hours_column {
-  width: 40px;
-  min-width: 2rem;
+  min-width: $hours-column-width;
+  min-height: 2rem;
   padding-top: 0;
-  margin-top: calc(-0.75rem + ($header-cell-height - 2rem) - ($hour-cell-height - 4rem));
+  margin-top: -5px;
 }
 
 .date_display {
   min-width: 200px;
   text-align: center;
+}
+
+.date_container {
+  height: $date-container-height;
 }
 
 .background {
