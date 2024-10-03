@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-calendar-column',
@@ -8,5 +8,9 @@ import {Component} from '@angular/core';
   styleUrl: './calendar-column.component.scss'
 })
 export class CalendarColumnComponent {
+  @Input() date: number = 0;
 
+  getID(hour: number): string {
+    return this.date + "." + hour;
+  }
 }

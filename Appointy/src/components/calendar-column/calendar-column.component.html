@@ -1,5 +1,5 @@
 <div>
   @for (hour of [].constructor(24); track $index) {
-  <div class="hour-cell"></div>
+  <div class="hour-cell" [id]="getID($index)"></div>
   }
 </div>

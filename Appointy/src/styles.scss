@@ -14,7 +14,7 @@ html, body {
 }
 //tesztelésre
 
-.global_size{
+.global_size {
   //height: 200px;
   //width: 400px;
   overflow-y: auto;
@@ -25,4 +25,20 @@ html, body {
 .fullscreen {
   height: 100vh;
   width: 100vw;
+}
+
+.event_container {
+  width: 100%;
+}
+.event_container:nth-child(2) {
+  width: 75%;
+  margin-left: -75%;
+}
+.event_container:nth-child(3) {
+  width: 50%;
+  margin-left: -50%;
+}
+.event_container:nth-child(4) {
+  width: 33%;
+  margin-left: -33%;
 }

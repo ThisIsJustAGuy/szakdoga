@@ -1,8 +1,15 @@
-import {Component} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+} from '@angular/core';
 import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
 import {CalendarServiceService} from "../services/calendar-service.service";
 import {WeekdayComponent} from "../components/weekday/weekday.component";
+import {EventComponent} from "../components/event/event.component";
+import {CalendarEvent} from "../classes/CalendarEvent";
 
 @Component({
   selector: 'app-home',
@@ -10,7 +17,8 @@ import {WeekdayComponent} from "../components/weekday/weekday.component";
   imports: [
     CalendarColumnComponent,
     HoursColumnComponent,
-    WeekdayComponent
+    WeekdayComponent,
+    EventComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -26,27 +34,69 @@ export class HomeComponent {
   prevMonthUsed: boolean = false;
   clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
 
-  constructor(private calendarService: CalendarServiceService) {
+  private componentRefs: ComponentRef<EventComponent>[] = [];
+
+  constructor(
+    private calendarService: CalendarServiceService,
+    private appRef: ApplicationRef,
+  ) {
+    this.initCalendarClient();
     this.currentDate = new Date();
     this.middleDate = new Date();
     this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
 
-    this.initCalendarClient();
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
-
   }
 
-  async initCalendarClient(){
+  async initCalendarClient() {
     await this.calendarService.initClient()
       .then(() => this.calendarService.getCalendarEvents(this.clientID)
-          .subscribe(res => this.displayEvents(res)));
+        .subscribe(res => {
+          this.displayEvents(res);
+        }));
   }
 
-  displayEvents(res: any) {
-    console.log(res);
-    for (const r of res) {
-      console.log(r.summary + ": " + r.description + "; " + r.location + ";;" + r.start.dateTime + ";;" + r.end.dateTime);
+  displayEvents(results: any) {
+    const events: CalendarEvent[] = []
+    for (const res of results) {
+      events.push(new CalendarEvent(res.summary, res.start, res.end, res.description));
+    }
+    let startElement: HTMLElement | null;
+    let calendarEvents: CalendarEvent[] = [];
+
+    for (const index in events) {
+      // helyes id-val rendelkező kocka megtalálása
+      startElement = document.getElementById(events[index].startDate.getDate() + "." + events[index].startDate.getHours());
+      // startElement = document.getElementById("kartya");
+
+      if (startElement) {
+        calendarEvents[index] = new CalendarEvent(events[index].summary, events[index].start, events[index].end, events[index].description);
+
+        // ne írják egymást felül, ha egy kockába kell többet tenni
+        const eventContainer = document.createElement('div');
+        eventContainer.classList.add("event_container");
+        startElement.appendChild(eventContainer);
+
+        // berakjuk a helyére
+        this.componentRefs[index] = this.appRef.bootstrap(EventComponent, eventContainer);
+        // utólag inputot kap
+        this.componentRefs[index].instance.calendarEvent = calendarEvents[index];
+
+        // Angular észre vegye, hogy változott az adat
+        const changeDetector = this.componentRefs[index].injector.get(ChangeDetectorRef);
+        changeDetector.detectChanges();
+      }
+    }
+
+  }
+
+  destroyComponent() {
+    if (this.componentRefs) {
+      for (const ref of this.componentRefs) {
+        this.appRef.detachView(ref.hostView);
+        ref.destroy();
+      }
     }
   }
 
@@ -58,7 +108,6 @@ export class HomeComponent {
       this.weekdays.push(day);
       baseDate.setDate(baseDate.getDate() + 1);
     }
-    console.log(this.weekdays);
   }
 
   prevWeek() {

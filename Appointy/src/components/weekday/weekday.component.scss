@@ -1,0 +1,8 @@
+@import "../../variables";
+
+.header-cell{
+  height: $header-cell-height;
+  border: 1px solid black;
+  border-top: none;
+  border-bottom: none;
+}

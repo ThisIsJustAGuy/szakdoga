@@ -1,8 +1,8 @@
 @for (hour of [].constructor(24); track $index) {
-    <div class="hour-display-cell d-flex justify-content-end">
-        <small>
-            {{$index}}:00
-        </small>
-    </div>
+  <div class="hour-display-cell d-flex justify-content-end">
+    <small id="{{$index}}">
+      {{ $index }}:00
+    </small>
+  </div>
 }
 

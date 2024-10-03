@@ -1,0 +1,11 @@
+<div class="card">
+  <small><strong>{{ calendarEvent.summary }}</strong></small>
+  <small>
+    <em>
+      {{ startHour }}:{{ startMinute }} - {{ endHour }}:{{ endMinute }}
+    </em>
+  </small>
+  @if(calendarEvent.description){
+  <small>{{ calendarEvent.description }}</small>
+  }
+</div>

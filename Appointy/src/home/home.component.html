@@ -6,7 +6,9 @@
     <button class="ms-4 btn btn-secondary btn-sm" (click)="nextWeek()">></button>
   </div>
 
+<div id="kartya" class="d-flex flex-column">
 
+</div>
   <div class="d-flex flex-row background fullscreen_lite">
 
     <div class="d-flex flex-column grow">
@@ -18,13 +20,13 @@
         }
       </div>
 
-      <div class="d-flex flex-row grow scrollable">
+      <div class="d-flex flex-row grow scrollable" id="scrollable">
         <div class="hours_column">
           <app-hours-column/>
         </div>
         @for (i of [].constructor(7); track $index) {
           <div class="d-flex flex-column grow">
-            <app-calendar-column class="day_column"/>
+            <app-calendar-column [date]="$index" class="day_column"/>
           </div>
         }
       </div>

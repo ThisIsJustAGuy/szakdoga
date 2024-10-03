@@ -1,0 +1,9 @@
+@import "../../variables";
+
+.card{
+  background-color: $primary-color;
+  color: $secondary-text-color;
+  border: none;
+  padding: 6px;
+  //margin-right: 1rem;
+}
