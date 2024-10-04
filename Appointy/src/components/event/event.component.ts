@@ -57,17 +57,17 @@ export class EventComponent {
     }
   }
 
-  setColor(card: HTMLElement){
+  setColor(card: HTMLElement) {
     const now: Date = new Date();
-    if (this.endHour < now.getHours() || (this.endHour == now.getHours() && this.endMinute <= now.getMinutes()) || this.calendarEvent.endDate.getDate() < now.getDate()){
+
+    if (this.calendarEvent.endDate < now) {
       card.classList.add("past_event");
-    }
-    else {
+    } else {
       card.classList.add("future_event");
     }
   }
 
-  eventClicked(){
+  eventClicked() {
     console.log(`${this.id} clicked`)
   }
 }

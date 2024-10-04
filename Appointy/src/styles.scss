@@ -29,6 +29,7 @@ html, body {
 
 .event_container {
   width: 100%;
+  z-index: 9;
 }
 .event_container:nth-child(2) {
   width: 75%;
@@ -47,4 +48,5 @@ html, body {
   width: 100%;
   z-index: 10;
   height: 2px;
+  position: absolute;
 }
