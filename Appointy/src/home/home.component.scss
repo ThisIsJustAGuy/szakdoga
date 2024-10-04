@@ -8,13 +8,13 @@
 
 .fullscreen_lite {
   width: 100vw;
-  height: calc(100vh - $date-container-height - $column-top-padding - $hour-cell-height);
+  height: calc(100vh - $date-container-height - $column-top-padding - var(--hour-cell-height));
 }
 
 .scrollable {
   overflow-y: auto;
   min-width: $min-width;
-  max-height: calc(100% - $column-top-padding - $hour-cell-height - $date-container-height);
+  max-height: calc(100% - $column-top-padding - var(--hour-cell-height) - $date-container-height);
   min-height: 100%;
 }
 

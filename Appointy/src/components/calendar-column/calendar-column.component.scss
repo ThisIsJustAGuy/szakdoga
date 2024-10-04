@@ -1,7 +1,7 @@
 @import "../../variables";
 
 .hour-cell {
-  height: $hour-cell-height;
+  height: var(--hour-cell-height);
   border: 1px solid black;
   border-bottom: none;
   display: flex;

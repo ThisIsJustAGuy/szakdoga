@@ -1,6 +1,5 @@
 import {
   ApplicationRef,
-  ChangeDetectorRef,
   Component,
   ComponentRef,
 } from '@angular/core';
@@ -65,13 +64,12 @@ export class HomeComponent {
     let startElement: HTMLElement | null;
     let calendarEvents: CalendarEvent[] = [];
 
-    for (const index in events) {
+    for (let i =  0; i < events.length; i++) {
       // helyes id-val rendelkező kocka megtalálása
-      startElement = document.getElementById(events[index].startDate.getDate() + "." + events[index].startDate.getHours());
-      // startElement = document.getElementById("kartya");
+      startElement = document.getElementById(events[i].startDate.getDate() + "." + events[i].startDate.getHours());
 
       if (startElement) {
-        calendarEvents[index] = new CalendarEvent(events[index].summary, events[index].start, events[index].end, events[index].description);
+        calendarEvents[i] = new CalendarEvent(events[i].summary, events[i].start, events[i].end, events[i].description);
 
         // ne írják egymást felül, ha egy kockába kell többet tenni
         const eventContainer = document.createElement('div');
@@ -79,13 +77,13 @@ export class HomeComponent {
         startElement.appendChild(eventContainer);
 
         // berakjuk a helyére
-        this.componentRefs[index] = this.appRef.bootstrap(EventComponent, eventContainer);
+        this.componentRefs[i] = this.appRef.bootstrap(EventComponent, eventContainer);
         // utólag inputot kap
-        this.componentRefs[index].instance.calendarEvent = calendarEvents[index];
+        this.componentRefs[i].instance.calendarEvent = calendarEvents[i];
+        this.componentRefs[i].instance.id = `card${i}`;
 
-        // Angular észre vegye, hogy változott az adat
-        const changeDetector = this.componentRefs[index].injector.get(ChangeDetectorRef);
-        changeDetector.detectChanges();
+        // Angular vegye észre az új adatokat
+        this.componentRefs[i].instance.updateVariables();
       }
     }
 

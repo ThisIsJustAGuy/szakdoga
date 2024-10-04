@@ -1,4 +1,10 @@
-$hour-cell-height: 4rem;
+//$hour-cell-height: 4rem;
+
+:root {
+  --hour-cell-height: 4rem;
+}
+
+
 $header-cell-height: 4rem;
 $date-container-height: 3rem;
 
@@ -20,3 +26,4 @@ $min-height: 300px;
 $min-width: calc($column-width * 7 + $hours-column-width);
 
 $min-table-height: 200px;
+

@@ -1,11 +1,11 @@
-<div class="card">
+<div class="card" [id]="id">
   <small><strong>{{ calendarEvent.summary }}</strong></small>
   <small>
     <em>
-      {{ startHour }}:{{ startMinute }} - {{ endHour }}:{{ endMinute }}
+      {{ startHour }}:{{ startMinute.toString().padStart(2, '0') }} - {{ endHour }}:{{ endMinute.toString().padStart(2, '0') }}
     </em>
   </small>
-  @if(calendarEvent.description){
-  <small>{{ calendarEvent.description }}</small>
+  @if (calendarEvent.description) {
+    <small>{{ calendarEvent.description }}</small>
   }
 </div>

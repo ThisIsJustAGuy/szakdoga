@@ -1,6 +1,6 @@
 @import "../../variables";
 
 .hour-display-cell {
-  height: $hour-cell-height;
+  height: var(--hour-cell-height);
   padding-right: 0.25rem;
 }
