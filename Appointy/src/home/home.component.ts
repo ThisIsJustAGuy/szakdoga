@@ -10,6 +10,7 @@ import {WeekdayComponent} from "../components/weekday/weekday.component";
 import {EventComponent} from "../components/event/event.component";
 import {CalendarEvent} from "../classes/CalendarEvent";
 import {Subscription} from "rxjs";
+import {NowMarkerComponent} from "../components/now-marker/now-marker.component";
 
 @Component({
   selector: 'app-home',
@@ -26,15 +27,20 @@ import {Subscription} from "rxjs";
 export class HomeComponent {
   weekdays: string[] = [];
   dates: number[] = [];
+
   locale: string = "hu-HU";
+
   currentDate: Date;
+  now: Date;
   middleDate: Date; // Ez alapján döntjük el milyen hónap van
+
   currentDay: number = 0;
   startDate: number = 0;
   prevMonthUsed: boolean = false;
   clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
 
-  private componentRefs: ComponentRef<EventComponent>[] = [];
+  componentRefs: ComponentRef<EventComponent>[] = [];
+  nowMarkerRef: ComponentRef<NowMarkerComponent> | null = null;
 
   constructor(
     private calendarService: CalendarServiceService,
@@ -43,6 +49,7 @@ export class HomeComponent {
     this.initCalendarClient();
     this.currentDate = new Date();
     this.middleDate = new Date();
+    this.now = new Date();
     this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
 
     this.fillWeekDays('hu-HU');
@@ -66,7 +73,6 @@ export class HomeComponent {
     for (const res of results) {
       events.push(new CalendarEvent(res.summary, res.start, res.end, res.description));
     }
-    console.log(events);
 
     let startElement: HTMLElement | null;
     let calendarEvents: CalendarEvent[] = [];
@@ -94,6 +100,8 @@ export class HomeComponent {
       }
     }
 
+    this.now = new Date();
+    this.setNowMarker();
   }
 
   destroyEvents() {
@@ -102,6 +110,9 @@ export class HomeComponent {
         this.appRef.detachView(ref.hostView);
         ref.destroy();
       }
+    }
+    if (this.nowMarkerRef) {
+      this.nowMarkerRef.destroy();
     }
   }
 
@@ -165,6 +176,30 @@ export class HomeComponent {
         date++;
       }
       this.dates.push(date);
+    }
+  }
+
+  setNowMarker() {
+    if (this.nowMarkerRef) {
+      this.nowMarkerRef?.destroy();
+    }
+
+    const startElement: HTMLElement | null = document.getElementById(this.now.getDate() + "." + this.now.getHours());
+
+    if (startElement) {
+      const nowContainer = document.createElement('div');
+      nowContainer.classList.add("now_container");
+      startElement.appendChild(nowContainer);
+
+      this.nowMarkerRef = this.appRef.bootstrap(NowMarkerComponent, nowContainer);
+
+      this.nowMarkerRef.instance.now = this.now;
+      setInterval(() => {
+        if (this.nowMarkerRef) {
+          nowContainer.style.marginTop = this.nowMarkerRef.instance.updateMarker();
+        }
+      }, 5000);
+
     }
   }
 }

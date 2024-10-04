@@ -40,6 +40,7 @@ export class EventComponent {
     const cellHeight: number = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-cell-height'));
     this.setMarginTop(card, cellHeight);
     this.setHeight(card, cellHeight);
+    this.setColor(card);
   }
 
   setMarginTop(card: HTMLElement, cellHeight: number) {
@@ -54,5 +55,19 @@ export class EventComponent {
       const height: number = cellHeight * (this.endHour - this.startHour) + cellHeight * ((this.endMinute - this.startMinute) / 60);
       card.style.height = `${height}rem`;
     }
+  }
+
+  setColor(card: HTMLElement){
+    const now: Date = new Date();
+    if (this.endHour < now.getHours() || (this.endHour == now.getHours() && this.endMinute <= now.getMinutes()) || this.calendarEvent.endDate.getDate() < now.getDate()){
+      card.classList.add("past_event");
+    }
+    else {
+      card.classList.add("future_event");
+    }
+  }
+
+  eventClicked(){
+    console.log(`${this.id} clicked`)
   }
 }
