@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import {CalendarEvent} from "../classes/CalendarEvent";
 
 declare var gapi: any;
 
@@ -25,11 +26,10 @@ export class CalendarServiceService {
     });
   }
 
-  getCalendarEvents(calendarId: string): Observable<any> {
+  getCalendarEvents(calendarId: string, date: Date = new Date()): Observable<CalendarEvent[]> {
     return new Observable((observer) => {
-      const now = new Date();
-      const startOfWeek = this.getStartOfWeek(now);
-      const endOfWeek = this.getEndOfWeek(now);
+      const startOfWeek = this.getStartOfWeek(date);
+      const endOfWeek = this.getEndOfWeek(date);
 
       gapi.client.calendar.events.list({
         'calendarId': calendarId,

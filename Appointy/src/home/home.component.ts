@@ -9,6 +9,7 @@ import {CalendarServiceService} from "../services/calendar-service.service";
 import {WeekdayComponent} from "../components/weekday/weekday.component";
 import {EventComponent} from "../components/event/event.component";
 import {CalendarEvent} from "../classes/CalendarEvent";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-home',
@@ -50,21 +51,27 @@ export class HomeComponent {
 
   async initCalendarClient() {
     await this.calendarService.initClient()
-      .then(() => this.calendarService.getCalendarEvents(this.clientID)
-        .subscribe(res => {
-          this.displayEvents(res);
-        }));
+      .then(() => {
+        const sub: Subscription = this.calendarService.getCalendarEvents(this.clientID)
+          .subscribe((res: CalendarEvent[]) => {
+            this.displayEvents(res);
+            sub.unsubscribe();
+          })
+      });
   }
 
-  displayEvents(results: any) {
+  displayEvents(results: CalendarEvent[]) {
+    // Számított mezők létrejöjjenek
     const events: CalendarEvent[] = []
     for (const res of results) {
       events.push(new CalendarEvent(res.summary, res.start, res.end, res.description));
     }
+    console.log(events);
+
     let startElement: HTMLElement | null;
     let calendarEvents: CalendarEvent[] = [];
 
-    for (let i =  0; i < events.length; i++) {
+    for (let i = 0; i < events.length; i++) {
       // helyes id-val rendelkező kocka megtalálása
       startElement = document.getElementById(events[i].startDate.getDate() + "." + events[i].startDate.getHours());
 
@@ -89,7 +96,7 @@ export class HomeComponent {
 
   }
 
-  destroyComponent() {
+  destroyEvents() {
     if (this.componentRefs) {
       for (const ref of this.componentRefs) {
         this.appRef.detachView(ref.hostView);
@@ -121,7 +128,14 @@ export class HomeComponent {
     this.currentDate.setDate(this.currentDate.getDate() + amount);
     this.middleDate.setDate(this.middleDate.getDate() + amount);
 
-    this.fillDatesOfWeek()
+    this.fillDatesOfWeek();
+    this.destroyEvents();
+
+    const sub: Subscription = this.calendarService.getCalendarEvents(this.clientID, this.currentDate)
+      .subscribe((res: CalendarEvent[]) => {
+        this.displayEvents(res);
+        sub.unsubscribe();
+      })
   }
 
   fillDatesOfWeek() {

@@ -24,9 +24,9 @@
         <div class="hours_column">
           <app-hours-column/>
         </div>
-        @for (i of [].constructor(7); track $index) {
+        @for (i of dates; track $index) {
           <div class="d-flex flex-column grow">
-            <app-calendar-column [date]="$index" class="day_column"/>
+            <app-calendar-column [date]="i" class="day_column"/>
           </div>
         }
       </div>
