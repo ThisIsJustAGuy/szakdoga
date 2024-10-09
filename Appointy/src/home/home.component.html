@@ -1,4 +1,7 @@
 <div class="d-flex flex-column fullscreen">
+
+  <app-event-details-modal *ngIf="eventDetailsVisible" [eventDetails]="eventDetails"/>
+
   <div class="d-flex flex-row justify-content-center align-items-center date_container">
     <button class="me-4 btn btn-secondary btn-sm" (click)="prevWeek()"><</button>
     <h4
@@ -6,9 +9,6 @@
     <button class="ms-4 btn btn-secondary btn-sm" (click)="nextWeek()">></button>
   </div>
 
-<div id="kartya" class="d-flex flex-column">
-
-</div>
   <div class="d-flex flex-row background fullscreen_lite">
 
     <div class="d-flex flex-column grow">

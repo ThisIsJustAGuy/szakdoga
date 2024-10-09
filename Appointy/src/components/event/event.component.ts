@@ -4,6 +4,7 @@ import {
   Input
 } from '@angular/core';
 import {CalendarEvent} from "../../classes/CalendarEvent";
+import {ModalService} from "../../services/modal.service";
 
 @Component({
   selector: 'app-event',
@@ -21,7 +22,10 @@ export class EventComponent {
   endHour: number = 0;
   endMinute: number = 0;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private modalService: ModalService
+  ) {}
 
 
   updateVariables() {
@@ -67,7 +71,7 @@ export class EventComponent {
     }
   }
 
-  eventClicked() {
-    console.log(`${this.id} clicked`)
+  openEventDetails(){
+    this.modalService.openModal(this.calendarEvent);
   }
 }

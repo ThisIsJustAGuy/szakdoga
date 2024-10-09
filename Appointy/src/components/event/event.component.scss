@@ -1,9 +1,9 @@
 @import "../../variables";
-
 .card{
   color: $secondary-text-color;
   border: 1px solid white;
   padding: 6px;
+  cursor: pointer;
 }
 
 .future_event{
@@ -11,5 +11,10 @@
 }
 
 .past_event {
-  background-color: $secondary-color;
+  background-color: $past-color;
+}
+
+small {
+  overflow: clip;
+  white-space: nowrap;
 }

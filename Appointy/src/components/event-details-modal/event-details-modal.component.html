@@ -1,0 +1,15 @@
+<div class="md-backdrop" (click)="closeModal()"></div>
+<div class="md">
+    <div class="md-header">
+        <h3 class="md-title">{{eventDetails?.summary ?? "No summary"}}</h3>
+        <span class="close_btn" (click)="closeModal()">×</span>
+    </div>
+    <div class="md-body">
+        <p>{{eventDetails?.description}}</p>
+        <small>{{eventDetails?.startDate?.getFullYear()}}.{{eventDetails?.startDate?.getMonth()?.toString()?.padStart(2, '0')}}.{{eventDetails?.startDate?.getDate()?.toString()?.padStart(2, '0')}}.</small>
+        <small>{{eventDetails?.startDate?.getHours()}}:{{eventDetails?.startDate?.getMinutes()?.toString()?.padStart(2, '0')}}-{{eventDetails?.endDate?.getHours()}}:{{eventDetails?.endDate?.getMinutes()?.toString()?.padStart(2, '0')}}</small>
+    </div>
+    <div class="md-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Close</button>
+    </div>
+</div>

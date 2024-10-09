@@ -1,7 +1,7 @@
 import {
-  ApplicationRef,
+  ApplicationRef, ChangeDetectorRef,
   Component,
-  ComponentRef,
+  ComponentRef, OnInit,
 } from '@angular/core';
 import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
@@ -11,6 +11,9 @@ import {EventComponent} from "../components/event/event.component";
 import {CalendarEvent} from "../classes/CalendarEvent";
 import {Subscription} from "rxjs";
 import {NowMarkerComponent} from "../components/now-marker/now-marker.component";
+import {EventDetailsModalComponent} from "../components/event-details-modal/event-details-modal.component";
+import {ModalService} from "../services/modal.service";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-home',
@@ -19,12 +22,14 @@ import {NowMarkerComponent} from "../components/now-marker/now-marker.component"
     CalendarColumnComponent,
     HoursColumnComponent,
     WeekdayComponent,
-    EventComponent
+    EventComponent,
+    EventDetailsModalComponent,
+    NgIf,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit{
   weekdays: string[] = [];
   dates: number[] = [];
 
@@ -42,9 +47,18 @@ export class HomeComponent {
   componentRefs: ComponentRef<EventComponent>[] = [];
   nowMarkerRef: ComponentRef<NowMarkerComponent> | null = null;
 
+  eventDetailsVisible: boolean = false;
+  eventDetails?: CalendarEvent;
+
+  ngOnInit(){
+    this.initEventDetailsModal();
+  }
+
   constructor(
     private calendarService: CalendarServiceService,
     private appRef: ApplicationRef,
+    private modalService: ModalService,
+    private cdr: ChangeDetectorRef
   ) {
     this.initCalendarClient();
     this.currentDate = new Date();
@@ -54,6 +68,16 @@ export class HomeComponent {
 
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
+  }
+
+  initEventDetailsModal(){
+    this.modalService.eventDetailsState$.subscribe(state => {
+      this.eventDetailsVisible = state.showDetails;
+      if (state.calendarEvent)
+        this.eventDetails = state.calendarEvent;
+
+      this.cdr.detectChanges();
+    })
   }
 
   async initCalendarClient() {
@@ -194,12 +218,18 @@ export class HomeComponent {
       this.nowMarkerRef = this.appRef.bootstrap(NowMarkerComponent, nowContainer);
 
       this.nowMarkerRef.instance.now = this.now;
-      setInterval(() => {
-        if (this.nowMarkerRef) {
-          nowContainer.style.marginTop = this.nowMarkerRef.instance.updateMarker();
-        }
-      }, 5000);
 
+      this.updateNowMarker(nowContainer);
+      setInterval(() => {
+        this.updateNowMarker(nowContainer);
+      }, 29000);
+
+    }
+  }
+
+  updateNowMarker(nowContainer: HTMLDivElement){
+    if (this.nowMarkerRef) {
+      nowContainer.style.marginTop = this.nowMarkerRef.instance.updateMarker();
     }
   }
 }

@@ -1,0 +1,50 @@
+.md-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index:999;
+}
+
+.md {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.md-header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.md-body{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.md-footer {
+  padding-top: 10px;
+  display: flex;
+  justify-content: end;
+}
+
+.close_btn{
+  cursor: pointer;
+  margin-top: -20px;
+  margin-right: -10px;
+}
+
+small{
+  display: block;
+  font-style: italic;
+  color: gray;
+}
+
