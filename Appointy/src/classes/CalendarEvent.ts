@@ -11,7 +11,5 @@ export class CalendarEvent {
   ) {
     this.startDate = new Date(start.dateTime);
     this.endDate = new Date(end.dateTime);
-    // - (this.startDate.getTimezoneOffset() / 60)
   }
-
 }

@@ -16,7 +16,7 @@
       <div class="d-flex flex-row">
         <div class="filler hours_column"></div>
         @for (day of weekdays; track $index) {
-          <app-weekday [day]="day" [date]="dates[$index]" class="weekdays"/>
+          <app-weekday [day]="day" [date]="dates[$index].getDate()" class="weekdays"/>
         }
       </div>
 
@@ -26,7 +26,7 @@
         </div>
         @for (i of dates; track $index) {
           <div class="d-flex flex-column grow">
-            <app-calendar-column [date]="i" class="day_column"/>
+            <app-calendar-column [date]="dates[$index]" class="day_column"/>
           </div>
         }
       </div>

@@ -1,3 +1,15 @@
+@import "../../variables";
+
+small {
+  display: block;
+  font-style: italic;
+  color: gray;
+}
+
+pre {
+  margin-bottom: 5px;
+}
+
 .md-backdrop {
   position: fixed;
   top: 0;
@@ -5,7 +17,7 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index:999;
+  z-index: 999;
 }
 
 .md {
@@ -20,12 +32,12 @@
   min-width: 200px;
 }
 
-.md-header{
+.md-header {
   display: flex;
   justify-content: space-between;
 }
 
-.md-body{
+.md-body {
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -36,15 +48,27 @@
   justify-content: end;
 }
 
-.close_btn{
+.close_btn {
   cursor: pointer;
   margin-top: -20px;
   margin-right: -10px;
 }
 
-small{
-  display: block;
-  font-style: italic;
-  color: gray;
+.time_input {
+  max-width: 150px;
+  overflow: clip;
 }
 
+.summary_row {
+  width: 100%;
+}
+
+.btn-ok{
+  background-color: $primary-color;
+  color: $secondary-text-color;
+}
+
+.date_details {
+  margin-bottom: 0;
+  margin-top: 1rem;
+}

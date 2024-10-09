@@ -72,6 +72,6 @@ export class EventComponent {
   }
 
   openEventDetails(){
-    this.modalService.openModal(this.calendarEvent);
+    this.modalService.openModal({calendarEvent: this.calendarEvent});
   }
 }

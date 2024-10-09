@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
-import {CalendarServiceService} from "../services/calendar-service.service";
+import {CalendarService} from "../services/calendar.service";
 import {WeekdayComponent} from "../components/weekday/weekday.component";
 import {EventComponent} from "../components/event/event.component";
 import {CalendarEvent} from "../classes/CalendarEvent";
@@ -14,6 +14,7 @@ import {NowMarkerComponent} from "../components/now-marker/now-marker.component"
 import {EventDetailsModalComponent} from "../components/event-details-modal/event-details-modal.component";
 import {ModalService} from "../services/modal.service";
 import {NgIf} from "@angular/common";
+import {EventDetails} from "../classes/EventDetails";
 
 @Component({
   selector: 'app-home',
@@ -29,9 +30,9 @@ import {NgIf} from "@angular/common";
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit{
+export class HomeComponent implements OnInit {
   weekdays: string[] = [];
-  dates: number[] = [];
+  dates: Date[] = [];
 
   locale: string = "hu-HU";
 
@@ -42,20 +43,22 @@ export class HomeComponent implements OnInit{
   currentDay: number = 0;
   startDate: number = 0;
   prevMonthUsed: boolean = false;
-  clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
+  // readonly clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
+  // readonly clientID: string = "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com";
+  oauth2Token: string = '';
 
   componentRefs: ComponentRef<EventComponent>[] = [];
   nowMarkerRef: ComponentRef<NowMarkerComponent> | null = null;
 
   eventDetailsVisible: boolean = false;
-  eventDetails?: CalendarEvent;
+  eventDetails!: EventDetails;
 
-  ngOnInit(){
+  ngOnInit() {
     this.initEventDetailsModal();
   }
 
   constructor(
-    private calendarService: CalendarServiceService,
+    private calendarService: CalendarService,
     private appRef: ApplicationRef,
     private modalService: ModalService,
     private cdr: ChangeDetectorRef
@@ -70,11 +73,12 @@ export class HomeComponent implements OnInit{
     this.fillDatesOfWeek();
   }
 
-  initEventDetailsModal(){
+  initEventDetailsModal() {
     this.modalService.eventDetailsState$.subscribe(state => {
-      this.eventDetailsVisible = state.showDetails;
-      if (state.calendarEvent)
-        this.eventDetails = state.calendarEvent;
+      this.eventDetailsVisible = state.showDetails ?? false;
+      if (state.calendarEvent || state.inputsRequired) {
+        this.eventDetails = state;
+      }
 
       this.cdr.detectChanges();
     })
@@ -83,7 +87,7 @@ export class HomeComponent implements OnInit{
   async initCalendarClient() {
     await this.calendarService.initClient()
       .then(() => {
-        const sub: Subscription = this.calendarService.getCalendarEvents(this.clientID)
+        const sub: Subscription = this.calendarService.getCalendarEvents()
           .subscribe((res: CalendarEvent[]) => {
             this.displayEvents(res);
             sub.unsubscribe();
@@ -166,7 +170,7 @@ export class HomeComponent implements OnInit{
     this.fillDatesOfWeek();
     this.destroyEvents();
 
-    const sub: Subscription = this.calendarService.getCalendarEvents(this.clientID, this.currentDate)
+    const sub: Subscription = this.calendarService.getCalendarEvents(this.currentDate)
       .subscribe((res: CalendarEvent[]) => {
         this.displayEvents(res);
         sub.unsubscribe();
@@ -199,7 +203,15 @@ export class HomeComponent implements OnInit{
       } else {
         date++;
       }
-      this.dates.push(date);
+
+      let copiedDate: Date = new Date(this.middleDate);
+      copiedDate.setDate(date);
+      if (date < 4) { //middleDate után
+        copiedDate.setMonth(copiedDate.getMonth() + 1);
+        this.dates.push(copiedDate);
+      } else {
+        this.dates.push(copiedDate);
+      }
     }
   }
 
@@ -227,7 +239,7 @@ export class HomeComponent implements OnInit{
     }
   }
 
-  updateNowMarker(nowContainer: HTMLDivElement){
+  updateNowMarker(nowContainer: HTMLDivElement) {
     if (this.nowMarkerRef) {
       nowContainer.style.marginTop = this.nowMarkerRef.instance.updateMarker();
     }
