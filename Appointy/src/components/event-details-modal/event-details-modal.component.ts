@@ -52,10 +52,13 @@ export class EventDetailsModalComponent implements AfterContentInit {
       formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
     }
 
-    this.calendarService.authenticate().subscribe(token => {
-      this.calendarService.createCalendarEvent(formValue, token).subscribe((res) => {
-        console.log(res);
-      });
+    this.calendarService.createCalendarEvent(formValue)      .subscribe({
+      next: (response) => {
+        console.log('Event created: ', response);
+      },
+      error: (error) => {
+        console.error('Error creating event: ', error);
+      }
     });
     this.closeModal();
   }

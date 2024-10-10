@@ -43,9 +43,6 @@ export class HomeComponent implements OnInit {
   currentDay: number = 0;
   startDate: number = 0;
   prevMonthUsed: boolean = false;
-  // readonly clientID: string = "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com";
-  // readonly clientID: string = "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com";
-  oauth2Token: string = '';
 
   componentRefs: ComponentRef<EventComponent>[] = [];
   nowMarkerRef: ComponentRef<NowMarkerComponent> | null = null;
@@ -63,7 +60,7 @@ export class HomeComponent implements OnInit {
     private modalService: ModalService,
     private cdr: ChangeDetectorRef
   ) {
-    this.initCalendarClient();
+    this.initCalendar();
     this.currentDate = new Date();
     this.middleDate = new Date();
     this.now = new Date();
@@ -75,24 +72,21 @@ export class HomeComponent implements OnInit {
 
   initEventDetailsModal() {
     this.modalService.eventDetailsState$.subscribe(state => {
-      this.eventDetailsVisible = state.showDetails ?? false;
       if (state.calendarEvent || state.inputsRequired) {
         this.eventDetails = state;
       }
+      this.eventDetailsVisible = state.showDetails ?? false;
 
       this.cdr.detectChanges();
     })
   }
 
-  async initCalendarClient() {
-    await this.calendarService.initClient()
-      .then(() => {
-        const sub: Subscription = this.calendarService.getCalendarEvents()
-          .subscribe((res: CalendarEvent[]) => {
-            this.displayEvents(res);
-            sub.unsubscribe();
-          })
-      });
+  initCalendar() {
+    const sub: Subscription = this.calendarService.getCalendarEvents()
+      .subscribe((res) => {
+        this.displayEvents(res.items);
+        sub.unsubscribe();
+      })
   }
 
   displayEvents(results: CalendarEvent[]) {
@@ -171,8 +165,8 @@ export class HomeComponent implements OnInit {
     this.destroyEvents();
 
     const sub: Subscription = this.calendarService.getCalendarEvents(this.currentDate)
-      .subscribe((res: CalendarEvent[]) => {
-        this.displayEvents(res);
+      .subscribe((res) => {
+        this.displayEvents(res.items);
         sub.unsubscribe();
       })
   }
