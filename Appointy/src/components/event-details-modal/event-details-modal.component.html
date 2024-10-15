@@ -19,7 +19,7 @@
           <textarea name="description" id="description" formControlName="description" cols="30" rows="3"></textarea>
 
           <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
-            .{{ eventDetails.calendarEvent?.startDate?.getMonth() }}
+            .{{ startMonth.padStart(2, '0') }}
             .{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
 
           <div class="d-flex flex-row justify-content-between time_input">
@@ -45,7 +45,7 @@
       } @else {
         <p>{{ eventDetails.calendarEvent?.description }}</p>
         <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
-          .{{ eventDetails.calendarEvent?.startDate?.getMonth()?.toString()?.padStart(2, '0') }}
+          .{{ startMonth.padStart(2, '0') }}
           .{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
         <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}
           :{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }}

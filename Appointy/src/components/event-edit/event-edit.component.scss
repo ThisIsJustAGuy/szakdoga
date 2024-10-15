@@ -1,0 +1,10 @@
+@import "../../variables";
+
+.formContainer{
+  height: 100vh;
+}
+
+.btn-ok{
+  background-color: $primary-color;
+  color: $secondary-text-color;
+}

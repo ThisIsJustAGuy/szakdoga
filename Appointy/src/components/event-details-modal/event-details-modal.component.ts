@@ -4,6 +4,7 @@ import {CalendarService} from "../../services/calendar.service";
 import {EventDetails} from "../../classes/EventDetails";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {EmailService} from "../../services/email.service";
+import {EmailJSResponseStatus} from "emailjs-com";
 
 @Component({
   selector: 'app-event-details-modal',
@@ -17,6 +18,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
   @Input() eventDetails!: EventDetails;
 
   eventForm: FormGroup;
+  startMonth: string = '';
+  endMonth: string = '';
 
   constructor(
     private modalService: ModalService,
@@ -34,6 +37,9 @@ export class EventDetailsModalComponent implements AfterContentInit {
       end: new FormControl(this.eventDetails.calendarEvent?.endDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email])
     });
+
+    this.startMonth = (this.eventDetails.calendarEvent?.startDate?.getMonth()! + 1).toString();
+    this.endMonth = (this.eventDetails.calendarEvent?.endDate?.getMonth()! + 1).toString();
   }
 
   saveChanges() {
@@ -48,8 +54,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
 
       const endTime = new Date(this.eventDetails.calendarEvent.end.dateTime);
       endTime.setHours(parseInt(formValue.end.split(':')[0]));
-      endTime.setSeconds(0);
       endTime.setMinutes(parseInt(formValue.end.split(':')[1]));
+      endTime.setSeconds(0);
 
       formValue.start = {dateTime: startTime.toISOString(), timeZone: timeZone};
       formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
@@ -60,8 +66,12 @@ export class EventDetailsModalComponent implements AfterContentInit {
     //   formValue.summary = "Reserved";
     // }
 
-    this.emailService.sendMail(formValue);
-    this.closeModal();
+    this.emailService.sendMail(formValue).then((response: EmailJSResponseStatus) => {
+      console.log('SUCCESS!', response.status, response.text);
+      this.closeModal();
+    }, (error) => {
+      console.error('FAILED...', error);
+    });
 
     // ez majd leokezes utan
     // this.calendarService.createCalendarEvent(formValue).subscribe({
