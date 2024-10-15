@@ -3,6 +3,7 @@ import {ModalService} from "../../services/modal.service";
 import {CalendarService} from "../../services/calendar.service";
 import {EventDetails} from "../../classes/EventDetails";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {EmailService} from "../../services/email.service";
 
 @Component({
   selector: 'app-event-details-modal',
@@ -19,17 +20,19 @@ export class EventDetailsModalComponent implements AfterContentInit {
 
   constructor(
     private modalService: ModalService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private emailService: EmailService
   ) {
     this.eventForm = new FormGroup({});
   }
 
   ngAfterContentInit() {
     this.eventForm = new FormGroup({
-      summary: new FormControl('', [Validators.required]),
+      summary: new FormControl(''),
       description: new FormControl(''),
       start: new FormControl(this.eventDetails.calendarEvent?.startDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
       end: new FormControl(this.eventDetails.calendarEvent?.endDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email])
     });
   }
 
@@ -52,15 +55,23 @@ export class EventDetailsModalComponent implements AfterContentInit {
       formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
     }
 
-    this.calendarService.createCalendarEvent(formValue)      .subscribe({
-      next: (response) => {
-        console.log('Event created: ', response);
-      },
-      error: (error) => {
-        console.error('Error creating event: ', error);
-      }
-    });
+    // lehessen állítani, hogy be lehessen-e állítani a title-t
+    // if (formValue.summary == ''){
+    //   formValue.summary = "Reserved";
+    // }
+
+    this.emailService.sendMail(formValue);
     this.closeModal();
+
+    // ez majd leokezes utan
+    // this.calendarService.createCalendarEvent(formValue).subscribe({
+    //   next: (response) => {
+    //     console.log('Event created: ', response);
+    //   },
+    //   error: (error) => {
+    //     console.error('Error creating event: ', error);
+    //   }
+    // });
   }
 
   closeModal() {

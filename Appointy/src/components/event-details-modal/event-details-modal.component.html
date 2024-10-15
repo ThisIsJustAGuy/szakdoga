@@ -35,6 +35,12 @@
               <input type="time" name="end" id="end" formControlName="end">
             </div>
           </div>
+          <div>
+            <div class="d-flex flex-column">
+              <label for="start">E-mail</label>
+              <input type="email" name="email" id="email" formControlName="email">
+            </div>
+          </div>
         </div>
       } @else {
         <p>{{ eventDetails.calendarEvent?.description }}</p>
@@ -49,7 +55,7 @@
     </div>
     <div class="md-footer">
       @if (eventDetails.inputsRequired) {
-        <button type="submit" class="btn btn-ok">OK</button>
+        <button type="submit" class="btn btn-ok" [disabled]="eventForm.invalid">OK</button>
       }
     </div>
   </form>

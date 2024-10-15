@@ -25,6 +25,7 @@
     "angular-oauth2-oidc": "^17.0.2",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "emailjs-com": "^3.2.0",
     "gapi-script": "^1.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
