@@ -4,6 +4,7 @@ import {HomeComponent} from "./home.component";
 import {EventEditComponent} from "../components/event-edit/event-edit.component";
 import {EventDeleteComponent} from "../components/event-delete/event-delete.component";
 import {EventAcceptComponent} from "../components/event-accept/event-accept.component";
+import {CreateCalendarEventComponent} from "../components/create-calendar-event/create-calendar-event.component";
 
 const routes: Routes = [
   {
@@ -24,6 +25,11 @@ const routes: Routes = [
   {
     path: 'delete-event',
     component: EventDeleteComponent,
+    canActivate: [],
+  },
+  {
+    path: 'create-calender-event',
+    component: CreateCalendarEventComponent,
     canActivate: [],
   },
   {
