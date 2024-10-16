@@ -1,18 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {EmailService} from "../../services/email.service";
-import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {EmailJSResponseStatus} from "emailjs-com";
 
 @Component({
-  selector: 'app-event-delete',
+  selector: 'app-event-accept',
   standalone: true,
   imports: [],
-  templateUrl: './event-delete.component.html',
-  styleUrl: './event-delete.component.scss'
+  templateUrl: './event-accept.component.html',
+  styleUrl: './event-accept.component.scss'
 })
-export class EventDeleteComponent implements OnInit {
-
+export class EventAcceptComponent implements OnInit{
   to_email: string | undefined;
   from_email: string | undefined;
   appointment_date: string | undefined;
@@ -28,7 +27,7 @@ export class EventDeleteComponent implements OnInit {
     private emailService: EmailService,
     private snackBar: MatSnackBar,
     private router: Router
-    ) {}
+  ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -40,7 +39,6 @@ export class EventDeleteComponent implements OnInit {
 
       this.to_email = params['to_email'];
       this.from_email = params['reply_to'];
-
 
       const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
       let returnValues = {
@@ -64,13 +62,12 @@ export class EventDeleteComponent implements OnInit {
       returnValues.start = {dateTime: startTime.toISOString(), timeZone: time_zone};
       returnValues.end = {dateTime: endTime.toISOString(), timeZone: time_zone};
 
-
       this.sendEmail(returnValues);
     });
   }
 
   sendEmail(returnValues: any){
-    this.emailService.sendMail(returnValues, this.to_email, this.from_email, "deleted")
+    this.emailService.sendMail(returnValues, this.to_email, this.from_email, "accepted")
       .then((response: EmailJSResponseStatus) => {
         console.log('SUCCESS!', response.status, response.text);
         const snackBarRef = this.snackBar.open('Notification sent. You will be redirected.', 'Close',  {
@@ -81,4 +78,5 @@ export class EventDeleteComponent implements OnInit {
         console.error('FAILED...', error);
       });
   }
+
 }

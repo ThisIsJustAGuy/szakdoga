@@ -17,13 +17,15 @@ export class EmailService {
   readonly edit_route: string = "edit-event";
   readonly accept_route: string = "accept-event";
   readonly delete_route: string = "delete-event";
+  readonly create_calendar_event: string = "create-calendar-event"; // új felvételnél
+  readonly edit_calendar_event: string = "edit-calendar-event"; // meglévő (már felvett) szerk-nél
 
   readonly company_email: string = "bbalint0404@gmail.com";
 
-  sendMail(formValue: any, to_email?: string, from_email?: string) {
+  sendMail(formValue: any, to_email?: string, from_email?: string, finishState: string = "inProgress") {
 
-    const appDate = fromZonedTime(formValue.start.dateTime, formValue.start.timeZone);
-    const appDateEnd = fromZonedTime(formValue.end.dateTime, formValue.end.timeZone);
+    const appDate = fromZonedTime(formValue.start?.dateTime, formValue.start?.timeZone);
+    const appDateEnd = fromZonedTime(formValue.end?.dateTime, formValue.end?.timeZone);
 
     const date: string = appDate.getFullYear() + "-" + (appDate.getMonth() + 1) + "-" + appDate.getDate();
     const start: string = appDate.getHours() + ":" + appDate.getMinutes().toString().padStart(2, '0');
@@ -47,7 +49,7 @@ export class EmailService {
     const new_request_data = {
       mail_subject: `New appointment request from ${from_email ?? formValue.email}`,
       mail_title: "New Appointment Request",
-      mail_text: `A potential customer ${from_email ?? formValue.email}) wants to book a new appointment.`,
+      mail_text: `A potential customer (${from_email ?? formValue.email}) wants to book a new appointment.`,
       mail_details: "Appointment details:"
     }
     const edited_request_data = {
@@ -68,6 +70,7 @@ export class EmailService {
       mail_text: "This appointment has been accepted by the other party.",
       mail_details: "Details of accepted appointment:"
     }
+
     // configban megadni majd, ha saját backendre küldené a contentet, és onnan küldene e-mailt.
     // nyilván dokumentálni kell milyen paramétereket vár a fogadó route
     // ha nincs megadva configban email backend url akkor menjünk az emailJS-re
@@ -82,9 +85,10 @@ export class EmailService {
       // );
     } else {
 
-      if (formValue == "deleted") {
+      if (finishState == "deleted") {
 
         //törölve lett
+        console.log("törlés");
 
         return emailjs.send(this.serviceId, this.finishedTemplateId, {
           to_email: to_email ?? this.company_email,
@@ -101,12 +105,15 @@ export class EmailService {
           view_link: this.base_url
         }, this.userId);
 
-      } else if (formValue == "accepted") {
+      } else if (finishState == "accepted") {
 
         //el lett fogadva
 
         //ha a from_email nem a company akkor az editesre kell vinni, a cég is fogadja el
         if (from_email != this.company_email) {
+          console.log("elfogadva, de editre küldjük a company emailre");
+
+          // itt kell beágyazni az accept linkbe a calendarba felvevős linket
 
           return emailjs.send(this.serviceId, this.inProgressTemplateId, {
             to_email: to_email ?? this.company_email,
@@ -126,6 +133,8 @@ export class EmailService {
           }, this.userId);
 
         } else {
+
+          console.log("elfogadva");
 
           return emailjs.send(this.serviceId, this.finishedTemplateId, {
             to_email: to_email ?? this.company_email,
@@ -147,6 +156,7 @@ export class EmailService {
       } else {
 
         //vagy új request, vagy szerkesztett
+        console.log("új / szerkesztés");
 
         return emailjs.send(this.serviceId, this.inProgressTemplateId, {
           to_email: to_email ?? this.company_email,

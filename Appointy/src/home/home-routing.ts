@@ -3,6 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import {HomeComponent} from "./home.component";
 import {EventEditComponent} from "../components/event-edit/event-edit.component";
 import {EventDeleteComponent} from "../components/event-delete/event-delete.component";
+import {EventAcceptComponent} from "../components/event-accept/event-accept.component";
 
 const routes: Routes = [
   {
@@ -17,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'accept-event',
-    component: EventEditComponent,
+    component: EventAcceptComponent,
     canActivate: [],
   },
   {
