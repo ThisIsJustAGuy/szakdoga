@@ -10,7 +10,6 @@ import {CalendarEvent} from "../../classes/CalendarEvent";
   styleUrl: './calendar-column.component.scss'
 })
 export class CalendarColumnComponent {
-  // @Input() date: number = 0;
   @Input() date: Date = new Date();
 
   constructor(private modalService: ModalService) {
@@ -25,7 +24,8 @@ export class CalendarColumnComponent {
     const endDate = new Date(this.date);
     endDate.setHours(hour + 1);
 
-    let calEvent = new CalendarEvent("", {dateTime: this.date.toISOString()}, {dateTime: endDate.toISOString()})
+    const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let calEvent = new CalendarEvent("", {dateTime: this.date.toISOString(), timeZone: time_zone}, {dateTime: endDate.toISOString(), timeZone: time_zone})
     this.modalService.openModal({inputsRequired: true, calendarEvent: calEvent})
   }
 }

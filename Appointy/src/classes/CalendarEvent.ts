@@ -4,8 +4,8 @@ export class CalendarEvent {
 
   constructor(
     public summary: string = "sample summary",
-    public start: {dateTime: string} = {dateTime: "2000-01-01T10:00:00+02:00"},
-    public end: {dateTime: string} = {dateTime: "2000-01-01T12:00:00+02:00"},
+    public start: {dateTime: string, timeZone: string} = {dateTime: "2000-01-01T10:00:00+02:00", timeZone: ''},
+    public end: {dateTime: string, timeZone: string} = {dateTime: "2000-01-01T12:00:00+02:00", timeZone: ''},
     public description?: string,
     public id?: number,
   ) {

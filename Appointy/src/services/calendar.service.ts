@@ -1,8 +1,10 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
+import {CalendarEvent} from "../classes/CalendarEvent";
+import {GoogleLoginProvider, SocialAuthService} from "@abacritt/angularx-social-login";
 
-declare var google: any
+declare var gapi: any
 
 @Injectable({
   providedIn: 'root'
@@ -12,65 +14,11 @@ export class CalendarService {
   CLIENT_ID = '703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com';
   CALENDAR_ID = '0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com';
 
-  // private accessToken: string | null = null;
-
-  constructor(private http: HttpClient) {
-    // this.initGoogle();
+  constructor(
+    private http: HttpClient,
+    private authService: SocialAuthService
+  ) {
   }
-
-  // initGoogle() {
-  //   google.accounts.id.initialize({
-  //     client_id: this.CLIENT_ID,
-  //     callback: this.handleCredentialResponse.bind(this),
-  //     scope: 'https://www.googleapis.com/auth/calendar',
-  //   });
-  //
-  //   google.accounts.id.prompt();
-  // }
-  //
-  // handleCredentialResponse(response: any) {
-  //   console.log(response.credential);
-  //   const idToken = response.credential;
-  //
-  //   // id_token az Oauth2-nek
-  //   this.exchangeToken(idToken).then((token: string) => {
-  //     this.accessToken = token;
-  //     console.log('Access Token: ', this.accessToken);
-  //   }).catch(error => console.error(error));
-  // }
-  //
-  // exchangeToken(idToken: string): Promise<string> {
-  //   return new Promise((resolve, reject) => {
-  //     const tokenUrl = 'https://oauth2.googleapis.com/token';
-  //     const params = new URLSearchParams();
-  //
-  //     //ezzel Oauth client not found
-  //     params.set('grant_type', 'urn:ietf:params:oauth:grant-type:jwt-bearer');
-  //     params.set('assertion', idToken);
-  //
-  //     //ezzel malformed auth code
-  //     // params.set('grant_type', 'authorization_code');
-  //     // params.set('code', idToken);
-  //     // params.set('client_id', this.CLIENT_ID);
-  //     // params.set('client_secret', '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');
-  //
-  //     this.http.post(tokenUrl, params.toString(), {
-  //       headers: new HttpHeaders({
-  //         'Content-Type': 'application/x-www-form-urlencoded',
-  //       })
-  //     }).subscribe({
-  //       next: (response: any) => {
-  //         console.log("success");
-  //         resolve(response.access_token);
-  //       },
-  //       error: (error) => {
-  //         //itt dobja el, de nem értem miért
-  //         console.error("Token exchange error: ", error.error);
-  //         reject(error);
-  //       }
-  //     });
-  //   });
-  // }
 
   getCalendarEvents(date: Date = new Date()): Observable<any> {
     const startOfWeek = this.getStartOfWeek(date);
@@ -99,18 +47,32 @@ export class CalendarService {
     return end;
   }
 
-  // createCalendarEvent(event: CalendarEvent): Observable<any> {
-  //   if (!this.accessToken) {
-  //     console.error('No access token available');
-  //   }
-  //
-  //   const headers = new HttpHeaders({
-  //     'Authorization': `Bearer ${this.accessToken}`,
-  //     'Content-Type': 'application/json'
-  //   });
-  //
-  //   return this.http.post(`https://www.googleapis.com/calendar/v3/calendars/${this.CALENDAR_ID}/events`, event, {headers});
-  // }
+
+  loadGapi(event: CalendarEvent) {
+
+    let e = new EventEmitter<boolean>;
+
+    gapi.load('client', () => {
+      gapi.client.init({
+        apiKey: this.API_KEY,
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+      }).then(() => {
+        this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then(() => {
+          this.createEvent(event).then(() => e.emit(true) );
+        });
+      })
+    });
+    return e;
+  }
+
+  async createEvent(event: CalendarEvent) {
+    // Végre felveszi
+    await gapi.client.calendar.events.insert({
+      'calendarId': this.CALENDAR_ID,
+      'resource': event,
+    }).execute((e: any) => console.log(e));
+  }
+
 }
 
 
