@@ -32,9 +32,7 @@
               <input type="time" name="end" id="end" formControlName="end" class="form-control">
             </div>
           </div>
-          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
-            .{{ startMonth.padStart(2, '0') }}
-            .{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
+          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
 
           <div class="d-flex flex-column">
             <label for="location">Location</label>
@@ -54,14 +52,15 @@
 
         </div>
       } @else {
+        @if(eventDetails.calendarEvent?.description){
         <p>{{ eventDetails.calendarEvent?.description }}</p>
-        <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
-          .{{ startMonth.padStart(2, '0') }}
-          .{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
-        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}
-          :{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }}
-          - {{ eventDetails.calendarEvent?.endDate?.getHours() }}
-          :{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
+        }
+        @if(eventDetails.calendarEvent?.location){
+        <p>Location: {{ eventDetails.calendarEvent?.location }}</p>
+        }
+
+        <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
+        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}:{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }}- {{ eventDetails.calendarEvent?.endDate?.getHours() }}:{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
       }
     </div>
     <div class="md-footer">

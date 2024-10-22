@@ -91,21 +91,19 @@ export class HomeComponent implements OnInit {
 
   displayEvents(results: CalendarEvent[]) {
     // Számított mezők létrejöjjenek
-    const events: CalendarEvent[] = []
+    const calendarEvents: CalendarEvent[] = []
     for (const res of results) {
-      events.push(new CalendarEvent(res.summary, res.start, res.end, res.description));
+      calendarEvents.push(new CalendarEvent(res.summary, res.start, res.end, res.description, res.location));
     }
 
     let startElement: HTMLElement | null;
-    let calendarEvents: CalendarEvent[] = [];
 
-    for (let i = 0; i < events.length; i++) {
+    for (let i = 0; i < calendarEvents.length; i++) {
       // helyes id-val rendelkező kocka megtalálása
-      startElement = document.getElementById(events[i].startDate.getDate() + "." + events[i].startDate.getHours());
+      startElement = document.getElementById(calendarEvents[i].startDate.getDate() + "." + calendarEvents[i].startDate.getHours());
 
       if (startElement) {
-        calendarEvents[i] = new CalendarEvent(events[i].summary, events[i].start, events[i].end, events[i].description);
-
+        // calendarEvents[i] = new CalendarEvent(events[i].summary, events[i].start, events[i].end, events[i].description, events[i].location);
         // ne írják egymást felül, ha egy kockába kell többet tenni
         const eventContainer = document.createElement('div');
         eventContainer.classList.add("event_container");
