@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
 import {CalendarEvent} from "../classes/CalendarEvent";
 import {GoogleLoginProvider, SocialAuthService} from "@abacritt/angularx-social-login";
+import {ConstantService} from "./constant.service";
 
 declare var gapi: any
 
@@ -10,13 +11,14 @@ declare var gapi: any
   providedIn: 'root'
 })
 export class CalendarService {
-  API_KEY = 'AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc';
-  CLIENT_ID = '703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com';
-  CALENDAR_ID = '0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com';
+  // API_KEY = 'AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc';
+  // CLIENT_ID = '703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com';
+  // CALENDAR_ID = '0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com';
 
   constructor(
     private http: HttpClient,
-    private authService: SocialAuthService
+    private authService: SocialAuthService,
+    private constService: ConstantService
   ) {
   }
 
@@ -28,7 +30,7 @@ export class CalendarService {
     const startDateTime = startOfWeek.toISOString();
     const endDateTime = endOfWeek.toISOString();
 
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${this.CALENDAR_ID}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.API_KEY}`;
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${this.constService.CALENDAR_ID}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.constService.API_KEY}`;
 
     return this.http.get(url);
   }
@@ -54,8 +56,8 @@ export class CalendarService {
 
     gapi.load('client', () => {
       gapi.client.init({
-        apiKey: this.API_KEY,
-        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+        apiKey: this.constService.API_KEY,
+        discoveryDocs: [this.constService.DISCOVERY_DOCS],
       }).then(() => {
         this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then(() => {
           this.createEvent(event).then(() => e.emit(true) );
@@ -66,9 +68,8 @@ export class CalendarService {
   }
 
   async createEvent(event: CalendarEvent) {
-    // Végre felveszi
     await gapi.client.calendar.events.insert({
-      'calendarId': this.CALENDAR_ID,
+      'calendarId': this.constService.CALENDAR_ID,
       'resource': event,
     }).execute((e: any) => console.log(e));
   }

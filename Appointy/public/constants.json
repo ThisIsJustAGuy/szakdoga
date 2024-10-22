@@ -1,0 +1,19 @@
+{
+  "redirectURL": "http://localhost:4200",
+  "locale": "hu-HU",
+  "apiKey": "AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc",
+  "clientID": "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com",
+  "calendarID": "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com",
+  "discoveryDocs": "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+  "serviceID": "service_vsa8qqp",
+  "inProgressTemplateID": "template_h0h44bn",
+  "finishedTemplateID": "template_99ge21g",
+  "userID": "_KlycIcm2HzL4TL3v",
+  "baseURL": "http://localhost:4200",
+  "editRoute": "edit-event",
+  "acceptRoute": "accept-event",
+  "deleteRoute": "delete-event",
+  "createEventRoute": "create-calender-event",
+  "editEventRoute": "edit-calendar-event",
+  "companyEmail": "bbalint0404@gmail.com"
+}

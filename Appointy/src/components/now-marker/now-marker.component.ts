@@ -21,8 +21,6 @@ export class NowMarkerComponent {
 
     if (marker) {
       const marginTop: number = cellHeight * (this.now.getMinutes() / 60);
-      // const marginTopS: number = cellHeight * (this.now.getSeconds() / 60);
-      // marker.style.marginTop = `${marginTopS}rem`;
       return `${marginTop}rem`;
     }
     return '';

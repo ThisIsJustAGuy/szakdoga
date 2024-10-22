@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {CalendarEvent} from "../../classes/CalendarEvent";
 import {GoogleSigninButtonModule, SocialAuthService} from "@abacritt/angularx-social-login";
+import {ConstantService} from "../../services/constant.service";
 
 @Component({
   selector: 'app-create-calendar-event',
@@ -26,14 +27,13 @@ export class CreateCalendarEventComponent implements OnInit {
 
   returnValues: CalendarEvent = new CalendarEvent();
 
-  redirectURL: string = "http://localhost:4200";
-
   constructor(
     private route: ActivatedRoute,
     private calendarService: CalendarService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private authService: SocialAuthService
+    private authService: SocialAuthService,
+    private constService: ConstantService
   ) {
   }
 
@@ -72,7 +72,7 @@ export class CreateCalendarEventComponent implements OnInit {
         const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close',  {
           duration: 8000,
         });
-        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.redirectURL));
+        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.constService.REDIRECT_URL));
       });
     });
   }

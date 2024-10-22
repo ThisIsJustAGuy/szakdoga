@@ -1,10 +1,10 @@
 import {AfterContentInit, Component, Input} from '@angular/core';
 import {ModalService} from "../../services/modal.service";
-import {CalendarService} from "../../services/calendar.service";
 import {EventDetails} from "../../classes/EventDetails";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {EmailService} from "../../services/email.service";
 import {EmailJSResponseStatus} from "emailjs-com";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-event-details-modal',
@@ -23,8 +23,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
 
   constructor(
     private modalService: ModalService,
-    private calendarService: CalendarService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private snackBar: MatSnackBar
   ) {
     this.eventForm = new FormGroup({});
   }
@@ -66,22 +66,15 @@ export class EventDetailsModalComponent implements AfterContentInit {
     //   formValue.summary = "Reserved";
     // }
 
-    this.emailService.sendMail(formValue).then((response: EmailJSResponseStatus) => {
+    this.emailService.sendMail(formValue).then((response: EmailJSResponseStatus | any) => {
       console.log('SUCCESS!', response.status, response.text);
+      this.snackBar.open('Notification sent.', 'Close',  {
+        duration: 8000,
+      });
       this.closeModal();
     }, (error) => {
       console.error('FAILED...', error);
     });
-
-    // ez majd leokezes utan
-    // this.calendarService.createCalendarEvent(formValue).subscribe({
-    //   next: (response) => {
-    //     console.log('Event created: ', response);
-    //   },
-    //   error: (error) => {
-    //     console.error('Error creating event: ', error);
-    //   }
-    // });
   }
 
   closeModal() {

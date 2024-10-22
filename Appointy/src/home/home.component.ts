@@ -15,6 +15,7 @@ import {EventDetailsModalComponent} from "../components/event-details-modal/even
 import {ModalService} from "../services/modal.service";
 import {NgIf} from "@angular/common";
 import {EventDetails} from "../classes/EventDetails";
+import {ConstantService} from "../services/constant.service";
 
 @Component({
   selector: 'app-home',
@@ -33,8 +34,6 @@ import {EventDetails} from "../classes/EventDetails";
 export class HomeComponent implements OnInit {
   weekdays: string[] = [];
   dates: Date[] = [];
-
-  locale: string = "hu-HU";
 
   currentDate: Date;
   now: Date;
@@ -58,7 +57,8 @@ export class HomeComponent implements OnInit {
     private calendarService: CalendarService,
     private appRef: ApplicationRef,
     private modalService: ModalService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    protected constService: ConstantService
   ) {
     this.initCalendar();
     this.currentDate = new Date();

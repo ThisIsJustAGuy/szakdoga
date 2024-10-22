@@ -5,7 +5,7 @@
   <div class="d-flex flex-row justify-content-center align-items-center date_container">
     <button class="me-4 btn btn-secondary btn-sm" (click)="prevWeek()"><</button>
     <h4
-      class="m-0 date_display">{{ currentDate.getFullYear() }} {{ middleDate.toLocaleDateString(locale, {month: 'long'}) }}</h4>
+      class="m-0 date_display">{{ currentDate.getFullYear() }} {{ middleDate.toLocaleDateString(constService.LOCALE, {month: 'long'}) }}</h4>
     <button class="ms-4 btn btn-secondary btn-sm" (click)="nextWeek()">></button>
   </div>
 

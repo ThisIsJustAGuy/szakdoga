@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
 import emailjs from "emailjs-com";
 import {fromZonedTime} from "date-fns-tz";
+import {ConstantService} from "./constant.service";
+import {HttpClient} from "@angular/common/http";
+import {lastValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -8,19 +11,10 @@ import {fromZonedTime} from "date-fns-tz";
 
 export class EmailService {
 
-  readonly serviceId: string = "service_vsa8qqp";
-  readonly inProgressTemplateId: string = "template_h0h44bn"; //új és edited
-  readonly finishedTemplateId: string = "template_99ge21g"; //deleted és accepted
-  readonly userId: string = "_KlycIcm2HzL4TL3v";
-
-  readonly base_url: string = "http://localhost:4200";
-  readonly edit_route: string = "edit-event";
-  readonly accept_route: string = "accept-event";
-  readonly delete_route: string = "delete-event";
-  readonly create_event_route: string = "create-calender-event"; // új felvételnél
-  readonly edit_event_route: string = "edit-calendar-event"; // meglévő (már felvett) szerk-nél
-
-  readonly company_email: string = "bbalint0404@gmail.com";
+  constructor(
+    private constService: ConstantService,
+    private http: HttpClient
+  ) {}
 
   sendMail(formValue: any, to_email?: string, from_email?: string, finishState: string = "inProgress") {
 
@@ -33,19 +27,19 @@ export class EmailService {
 
     const params = new URLSearchParams({
       to_email: from_email ?? formValue.email,
-      reply_to: to_email ?? this.company_email,
+      reply_to: to_email ?? this.constService.COMPANY_EMAIL,
       appointment_date: date,
       start_time: start,
       end_time: end,
-      edit_route: this.edit_route,
+      edit_route: this.constService.EDIT_ROUTE,
       summary: formValue.summary,
       description: formValue.description,
     });
 
-    const edit_route = this.base_url + "/" + this.edit_route + "?" + params.toString();
-    const accept_route = this.base_url + "/" + this.accept_route + "?" + params.toString();
-    const delete_route = this.base_url + "/" + this.delete_route + "?" + params.toString();
-    const create_event_route = this.base_url + "/" + this.create_event_route + "?" + params.toString();
+    const edit_route = this.constService.BASE_URL + "/" + this.constService.EDIT_ROUTE + "?" + params.toString();
+    const accept_route = this.constService.BASE_URL + "/" + this.constService.ACCEPT_ROUTE + "?" + params.toString();
+    const delete_route = this.constService.BASE_URL + "/" + this.constService.DELETE_ROUTE + "?" + params.toString();
+    const create_event_route = this.constService.BASE_URL + "/" + this.constService.CREATE_EVENT_ROUTE + "?" + params.toString();
 
     const new_request_data = {
       mail_subject: `New appointment request from ${from_email ?? formValue.email}`,
@@ -72,123 +66,115 @@ export class EmailService {
       mail_details: "Details of accepted appointment:"
     }
 
-    let request_data = {};
-    let template_id = "";
+    let request_data;
+    let template_id;
 
-    // configban megadni majd, ha saját backendre küldené a contentet, és onnan küldene e-mailt.
-    // nyilván dokumentálni kell milyen paramétereket vár a fogadó route
-    // ha nincs megadva configban email backend url akkor menjünk az emailJS-re
-    if (false) {
-      // this.http.post('http://your-backend-url/send-email', emailData).subscribe(
-      //   response => {
-      //     console.log('Email sent successfully');
-      //   },
-      //   error => {
-      //     console.error('Error sending email:', error);
-      //   }
-      // );
-    } else {
+    if (finishState == "deleted") {
 
-      if (finishState == "deleted") {
+      //törölve lett
+      console.log("törlés");
 
-        //törölve lett
-        console.log("törlés");
+      request_data = {
+        to_email: to_email ?? this.constService.COMPANY_EMAIL,
+        reply_to: from_email ?? formValue.email,
+        appointment_date: date,
+        start_time: start,
+        end_time: end,
+        summary: formValue.summary,
+        description: formValue.description,
+        mail_subject: deleted_request_data.mail_subject,
+        mail_title: deleted_request_data.mail_title,
+        mail_text: deleted_request_data.mail_text,
+        mail_details: deleted_request_data.mail_details,
+        view_link: this.constService.BASE_URL
+      };
+
+      template_id = this.constService.FINISHED_TEMPLATE_ID;
+
+    } else if (finishState == "accepted") {
+
+      //el lett fogadva
+
+      //ha a from_email nem a company akkor az editesre kell vinni, a cég is fogadja el
+      if (from_email != this.constService.COMPANY_EMAIL) {
+
+        console.log("elfogadva, de editre küldjük a company emailre");
 
         request_data = {
-          to_email: to_email ?? this.company_email,
+          to_email: to_email ?? this.constService.COMPANY_EMAIL,
           reply_to: from_email ?? formValue.email,
           appointment_date: date,
           start_time: start,
           end_time: end,
           summary: formValue.summary,
           description: formValue.description,
-          mail_subject: deleted_request_data.mail_subject,
-          mail_title: deleted_request_data.mail_title,
-          mail_text: deleted_request_data.mail_text,
-          mail_details: deleted_request_data.mail_details,
-          view_link: this.base_url
+          mail_subject: accepted_request_data.mail_subject,
+          mail_title: accepted_request_data.mail_title,
+          mail_text: accepted_request_data.mail_text,
+          mail_details: accepted_request_data.mail_details,
+          edit_route: edit_route,
+          accept_route: create_event_route, // ez különbözik, felveszi az eventet
+          delete_route: delete_route,
         };
 
-        template_id = this.finishedTemplateId;
-
-      } else if (finishState == "accepted") {
-
-        //el lett fogadva
-
-        //ha a from_email nem a company akkor az editesre kell vinni, a cég is fogadja el
-        if (from_email != this.company_email) {
-
-          console.log("elfogadva, de editre küldjük a company emailre");
-
-          request_data = {
-            to_email: to_email ?? this.company_email,
-            reply_to: from_email ?? formValue.email,
-            appointment_date: date,
-            start_time: start,
-            end_time: end,
-            summary: formValue.summary,
-            description: formValue.description,
-            mail_subject: accepted_request_data.mail_subject,
-            mail_title: accepted_request_data.mail_title,
-            mail_text: accepted_request_data.mail_text,
-            mail_details: accepted_request_data.mail_details,
-            edit_route: edit_route,
-            accept_route: create_event_route, // ez különbözik, felveszi az eventet
-            delete_route: delete_route,
-          };
-
-          template_id = this.inProgressTemplateId;
-
-        } else {
-
-          console.log("elfogadva");
-
-          request_data = {
-            to_email: to_email ?? this.company_email,
-            reply_to: from_email ?? formValue.email,
-            appointment_date: date,
-            start_time: start,
-            end_time: end,
-            summary: formValue.summary,
-            description: formValue.description,
-            mail_subject: accepted_request_data.mail_subject,
-            mail_title: accepted_request_data.mail_title,
-            mail_text: accepted_request_data.mail_text,
-            mail_details: accepted_request_data.mail_details,
-            view_link: this.base_url
-          };
-
-          template_id = this.finishedTemplateId;
-
-        }
+        template_id = this.constService.IN_PROGRESS_TEMPLATE_ID;
 
       } else {
 
-        //vagy új request, vagy szerkesztett
-        console.log("új / szerkesztett");
+        console.log("elfogadva");
 
         request_data = {
-          to_email: to_email ?? this.company_email,
+          to_email: to_email ?? this.constService.COMPANY_EMAIL,
           reply_to: from_email ?? formValue.email,
           appointment_date: date,
           start_time: start,
           end_time: end,
           summary: formValue.summary,
           description: formValue.description,
-          mail_subject: (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject),
-          mail_title: (to_email ? edited_request_data.mail_title : new_request_data.mail_title),
-          mail_text: (to_email ? edited_request_data.mail_text : new_request_data.mail_text),
-          mail_details: (to_email ? edited_request_data.mail_details : new_request_data.mail_details),
-          edit_route: edit_route, // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
-          accept_route: accept_route, // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
-          delete_route: delete_route, // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
+          mail_subject: accepted_request_data.mail_subject,
+          mail_title: accepted_request_data.mail_title,
+          mail_text: accepted_request_data.mail_text,
+          mail_details: accepted_request_data.mail_details,
+          view_link: this.constService.BASE_URL
         };
 
-        template_id = this.inProgressTemplateId;
+        template_id = this.constService.FINISHED_TEMPLATE_ID;
 
       }
 
-      return emailjs.send(this.serviceId, template_id, request_data, this.userId);
+    } else {
+
+      //vagy új request, vagy szerkesztett
+      console.log("új / szerkesztett");
+
+      request_data = {
+        to_email: to_email ?? this.constService.COMPANY_EMAIL,
+        reply_to: from_email ?? formValue.email,
+        appointment_date: date,
+        start_time: start,
+        end_time: end,
+        summary: formValue.summary,
+        description: formValue.description,
+        mail_subject: (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject),
+        mail_title: (to_email ? edited_request_data.mail_title : new_request_data.mail_title),
+        mail_text: (to_email ? edited_request_data.mail_text : new_request_data.mail_text),
+        mail_details: (to_email ? edited_request_data.mail_details : new_request_data.mail_details),
+        edit_route: edit_route, // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
+        accept_route: accept_route, // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
+        delete_route: delete_route, // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
+      };
+
+      template_id = this.constService.IN_PROGRESS_TEMPLATE_ID;
+
+    }
+
+    // configban megadni, ha saját backendre küldené a contentet, és onnan küldene e-mailt.
+    // nyilván dokumentálni kell milyen paramétereket vár a fogadó route
+    // ha nincs megadva configban email backend url akkor menjünk az emailJS-re
+    if (this.constService.EMAIL_BACKEND_URL && this.constService.EMAIL_BACKEND_URL != "") {
+      return lastValueFrom(this.http.post(this.constService.EMAIL_BACKEND_URL, request_data));
+    } else {
+      return emailjs.send(this.constService.SERVICE_ID, template_id, request_data, this.constService.USER_ID);
     }
   }
 }

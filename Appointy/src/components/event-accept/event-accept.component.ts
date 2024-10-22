@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {EmailService} from "../../services/email.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {EmailJSResponseStatus} from "emailjs-com";
+import {ConstantService} from "../../services/constant.service";
 
 @Component({
   selector: 'app-event-accept',
@@ -20,13 +21,12 @@ export class EventAcceptComponent implements OnInit{
   summary: string | undefined;
   description: string | undefined;
 
-  redirectURL: string = "http://localhost:4200";
-
   constructor(
     private route: ActivatedRoute,
     private emailService: EmailService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private constService: ConstantService
   ) {}
 
   ngOnInit() {
@@ -68,13 +68,13 @@ export class EventAcceptComponent implements OnInit{
 
   sendEmail(returnValues: any){
     this.emailService.sendMail(returnValues, this.to_email, this.from_email, "accepted")
-      .then((response: EmailJSResponseStatus) => {
-        console.log('SUCCESS!', response.status, response.text);
+      .then((response: EmailJSResponseStatus | any) => {
+        console.log('SUCCESS!', response);
         const snackBarRef = this.snackBar.open('Notification sent. You will be redirected.', 'Close',  {
           duration: 8000,
         });
-        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.redirectURL));
-      }, (error) => {
+        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.constService.REDIRECT_URL));
+      }, (error: any) => {
         console.error('FAILED...', error);
       });
   }
