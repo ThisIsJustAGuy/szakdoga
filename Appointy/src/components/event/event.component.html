@@ -5,7 +5,10 @@
       {{ startHour }}:{{ startMinute.toString().padStart(2, '0') }} - {{ endHour }}:{{ endMinute.toString().padStart(2, '0') }}
     </em>
   </small>
+  @if (calendarEvent.location) {
+    <small>{{ calendarEvent.location }}</small>
+  }
   @if (calendarEvent.description) {
-    <small>{{ calendarEvent.description }}</small>
+    <small>{{ calendarEvent.description.length > 10 ? (calendarEvent.description | slice:0:10) + '...' : calendarEvent.description}}</small>
   }
 </div>

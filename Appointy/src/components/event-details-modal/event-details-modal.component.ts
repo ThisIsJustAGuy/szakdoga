@@ -5,6 +5,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {EmailService} from "../../services/email.service";
 import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {ConstantService} from "../../services/constant.service";
 
 @Component({
   selector: 'app-event-details-modal',
@@ -24,7 +25,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
   constructor(
     private modalService: ModalService,
     private emailService: EmailService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    protected constService: ConstantService
   ) {
     this.eventForm = new FormGroup({});
   }
@@ -35,6 +37,7 @@ export class EventDetailsModalComponent implements AfterContentInit {
       description: new FormControl(''),
       start: new FormControl(this.eventDetails.calendarEvent?.startDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
       end: new FormControl(this.eventDetails.calendarEvent?.endDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
+      location: new FormControl('0'),
       email: new FormControl('', [Validators.required, Validators.email])
     });
 

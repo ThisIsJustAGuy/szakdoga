@@ -16,5 +16,6 @@
   "createEventRoute": "create-calender-event",
   "editEventRoute": "edit-calendar-event",
   "companyEmail": "bbalint0404@gmail.com",
-  "scope": "https://www.googleapis.com/auth/calendar"
+  "scope": "https://www.googleapis.com/auth/calendar",
+  "locations": ["A location", "B location", "C location"]
 }

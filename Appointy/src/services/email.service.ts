@@ -17,13 +17,12 @@ export class EmailService {
   ) {}
 
   sendMail(formValue: any, to_email?: string, from_email?: string, finishState: string = "inProgress") {
-
     const appDate = fromZonedTime(formValue.start?.dateTime, formValue.start?.timeZone);
     const appDateEnd = fromZonedTime(formValue.end?.dateTime, formValue.end?.timeZone);
 
     const date: string = appDate.getFullYear() + "-" + (appDate.getMonth() + 1) + "-" + appDate.getDate();
-    const start: string = appDate.getHours() + ":" + appDate.getMinutes().toString().padStart(2, '0');
-    const end: string = appDateEnd.getHours() + ":" + appDateEnd.getMinutes().toString().padStart(2, '0');
+    const start: string = appDate.getHours().toString().padStart(2, '0') + ":" + appDate.getMinutes().toString().padStart(2, '0');
+    const end: string = appDateEnd.getHours().toString().padStart(2, '0') + ":" + appDateEnd.getMinutes().toString().padStart(2, '0');
 
     const params = new URLSearchParams({
       to_email: from_email ?? formValue.email,
@@ -34,6 +33,7 @@ export class EmailService {
       edit_route: this.constService.EDIT_ROUTE,
       summary: formValue.summary,
       description: formValue.description,
+      location: formValue.location
     });
 
     const edit_route = this.constService.BASE_URL + "/" + this.constService.EDIT_ROUTE + "?" + params.toString();
@@ -66,7 +66,16 @@ export class EmailService {
       mail_details: "Details of accepted appointment:"
     }
 
-    let request_data;
+    let request_data: any = {
+      to_email: to_email ?? this.constService.COMPANY_EMAIL,
+      reply_to: from_email ?? formValue.email,
+      appointment_date: date,
+      start_time: start,
+      end_time: end,
+      summary: formValue.summary,
+      description: formValue.description,
+      location: formValue.location,
+    };
     let template_id;
 
     if (finishState == "deleted") {
@@ -74,20 +83,10 @@ export class EmailService {
       //törölve lett
       console.log("törlés");
 
-      request_data = {
-        to_email: to_email ?? this.constService.COMPANY_EMAIL,
-        reply_to: from_email ?? formValue.email,
-        appointment_date: date,
-        start_time: start,
-        end_time: end,
-        summary: formValue.summary,
-        description: formValue.description,
-        mail_subject: deleted_request_data.mail_subject,
-        mail_title: deleted_request_data.mail_title,
-        mail_text: deleted_request_data.mail_text,
-        mail_details: deleted_request_data.mail_details,
-        view_link: this.constService.BASE_URL
-      };
+      request_data.mail_subject = deleted_request_data.mail_subject;
+      request_data.mail_title = deleted_request_data.mail_title;
+      request_data.mail_details = deleted_request_data.mail_details;
+      request_data.view_link = this.constService.BASE_URL;
 
       template_id = this.constService.FINISHED_TEMPLATE_ID;
 
@@ -100,22 +99,13 @@ export class EmailService {
 
         console.log("elfogadva, de editre küldjük a company emailre");
 
-        request_data = {
-          to_email: to_email ?? this.constService.COMPANY_EMAIL,
-          reply_to: from_email ?? formValue.email,
-          appointment_date: date,
-          start_time: start,
-          end_time: end,
-          summary: formValue.summary,
-          description: formValue.description,
-          mail_subject: accepted_request_data.mail_subject,
-          mail_title: accepted_request_data.mail_title,
-          mail_text: accepted_request_data.mail_text,
-          mail_details: accepted_request_data.mail_details,
-          edit_route: edit_route,
-          accept_route: create_event_route, // ez különbözik, felveszi az eventet
-          delete_route: delete_route,
-        };
+        request_data.mail_subject = accepted_request_data.mail_subject;
+        request_data.mail_title = accepted_request_data.mail_title;
+        request_data.mail_text = accepted_request_data.mail_text;
+        request_data.mail_details = accepted_request_data.mail_details;
+        request_data.edit_route = edit_route;
+        request_data.accept_route = create_event_route; // ez különbözik, felveszi az eventet
+        request_data.delete_route = delete_route;
 
         template_id = this.constService.IN_PROGRESS_TEMPLATE_ID;
 
@@ -123,20 +113,11 @@ export class EmailService {
 
         console.log("elfogadva");
 
-        request_data = {
-          to_email: to_email ?? this.constService.COMPANY_EMAIL,
-          reply_to: from_email ?? formValue.email,
-          appointment_date: date,
-          start_time: start,
-          end_time: end,
-          summary: formValue.summary,
-          description: formValue.description,
-          mail_subject: accepted_request_data.mail_subject,
-          mail_title: accepted_request_data.mail_title,
-          mail_text: accepted_request_data.mail_text,
-          mail_details: accepted_request_data.mail_details,
-          view_link: this.constService.BASE_URL
-        };
+        request_data.mail_subject = accepted_request_data.mail_subject;
+        request_data.mail_title = accepted_request_data.mail_title;
+        request_data.mail_text = accepted_request_data.mail_text;
+        request_data.mail_details = accepted_request_data.mail_details;
+        request_data.view_link = this.constService.BASE_URL;
 
         template_id = this.constService.FINISHED_TEMPLATE_ID;
 
@@ -147,22 +128,23 @@ export class EmailService {
       //vagy új request, vagy szerkesztett
       console.log("új / szerkesztett");
 
-      request_data = {
-        to_email: to_email ?? this.constService.COMPANY_EMAIL,
-        reply_to: from_email ?? formValue.email,
-        appointment_date: date,
-        start_time: start,
-        end_time: end,
-        summary: formValue.summary,
-        description: formValue.description,
-        mail_subject: (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject),
-        mail_title: (to_email ? edited_request_data.mail_title : new_request_data.mail_title),
-        mail_text: (to_email ? edited_request_data.mail_text : new_request_data.mail_text),
-        mail_details: (to_email ? edited_request_data.mail_details : new_request_data.mail_details),
-        edit_route: edit_route, // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
-        accept_route: accept_route, // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
-        delete_route: delete_route, // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
-      };
+      request_data.mail_subject = (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject);
+      request_data.mail_title = (to_email ? edited_request_data.mail_title : new_request_data.mail_title);
+      request_data.mail_text = (to_email ? edited_request_data.mail_text : new_request_data.mail_text);
+      request_data.mail_details = (to_email ? edited_request_data.mail_details : new_request_data.mail_details);
+      request_data.edit_route = edit_route; // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
+      request_data.accept_route = accept_route; // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
+      request_data.delete_route = delete_route; // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
+
+      // request_data = {
+      //   mail_subject: (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject),
+      //   mail_title: (to_email ? edited_request_data.mail_title : new_request_data.mail_title),
+      //   mail_text: (to_email ? edited_request_data.mail_text : new_request_data.mail_text),
+      //   mail_details: (to_email ? edited_request_data.mail_details : new_request_data.mail_details),
+      //   edit_route: edit_route, // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
+      //   accept_route: accept_route, // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
+      //   delete_route: delete_route, // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
+      // };
 
       template_id = this.constService.IN_PROGRESS_TEMPLATE_ID;
 

@@ -28,6 +28,7 @@ export class EventEditComponent implements OnInit {
   edit_route: string | undefined;
   accept_route: string | undefined;
   delete_route: string | undefined;
+  location: string | undefined;
 
   eventForm: FormGroup;
 
@@ -36,7 +37,7 @@ export class EventEditComponent implements OnInit {
     private emailService: EmailService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private constService: ConstantService
+    protected constService: ConstantService
   ) {
     this.eventForm = new FormGroup({});
   }
@@ -48,6 +49,7 @@ export class EventEditComponent implements OnInit {
       this.end_time = params['end_time'];
       this.summary = params['summary'];
       this.description = params['description'];
+      this.location = params['location'];
 
       this.to_email = params['to_email']; //ide küldjük vissza
       this.from_email = params['reply_to']; //innen küldjük
@@ -61,6 +63,7 @@ export class EventEditComponent implements OnInit {
         date: new FormControl(this.appointment_date, [Validators.required]),
         start: new FormControl(this.start_time, [Validators.required]),
         end: new FormControl(this.end_time, [Validators.required]),
+        location: new FormControl(this.location),
       });
     });
   }
@@ -85,10 +88,10 @@ export class EventEditComponent implements OnInit {
     this.emailService.sendMail(this.eventForm.value, this.to_email, this.from_email)
       .then((response: EmailJSResponseStatus | any) => {
         console.log('SUCCESS!', response.status, response.text);
-        const snackBarRef = this.snackBar.open('Edit successful. You will be redirected.', 'Close',  {
+        const snackBarRef = this.snackBar.open('Edit successful. You will be redirected.', 'Close', {
           duration: 8000,
         });
-        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.constService.REDIRECT_URL));
+        snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL));
       }, (error) => {
         console.error('FAILED...', error);
       });

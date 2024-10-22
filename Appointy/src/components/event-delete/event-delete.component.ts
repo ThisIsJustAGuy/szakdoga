@@ -21,6 +21,7 @@ export class EventDeleteComponent implements OnInit {
   end_time: string | undefined;
   summary: string | undefined;
   description: string | undefined;
+  location: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,6 +38,7 @@ export class EventDeleteComponent implements OnInit {
       this.end_time = params['end_time'];
       this.summary = params['summary'];
       this.description = params['description'];
+      this.location = params['location'];
 
       this.to_email = params['to_email'];
       this.from_email = params['reply_to'];
@@ -49,6 +51,7 @@ export class EventDeleteComponent implements OnInit {
         end: {dateTime: "", timeZone: ""},
         summary: this.summary,
         description: this.description,
+        location: this.location
       };
 
       const startTime = new Date(this.appointment_date!);

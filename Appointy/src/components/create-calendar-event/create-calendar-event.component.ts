@@ -24,6 +24,7 @@ export class CreateCalendarEventComponent implements OnInit {
   end_time: string | undefined;
   summary: string | undefined;
   description: string | undefined;
+  location: string | undefined;
 
   returnValues: CalendarEvent = new CalendarEvent();
 
@@ -44,6 +45,7 @@ export class CreateCalendarEventComponent implements OnInit {
       this.end_time = params['end_time'];
       this.summary = params['summary'];
       this.description = params['description'];
+      this.location = params['location'];
 
       const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
       this.returnValues = new CalendarEvent(
@@ -51,6 +53,7 @@ export class CreateCalendarEventComponent implements OnInit {
         {dateTime: "", timeZone: ""},
         {dateTime: "", timeZone: ""},
         this.description,
+        this.location
       );
 
       const startTime = new Date(this.appointment_date!);

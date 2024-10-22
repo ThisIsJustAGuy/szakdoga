@@ -104,6 +104,11 @@ export class ConstantService {
     return this._COMPANY_EMAIL;
   }
 
+  private _LOCATIONS: string[] = [];
+  get LOCATIONS(): string[]{
+    return this._LOCATIONS;
+  }
+
   private _PATH = "constants.json";
 
   constructor(private http: HttpClient) {
@@ -130,6 +135,7 @@ export class ConstantService {
       this._CREATE_EVENT_ROUTE = data.createEventRoute ?? "";
       this._EDIT_EVENT_ROUTE = data.editEventRoute ?? "";
       this._COMPANY_EMAIL = data.companyEmail ?? "";
+      this._LOCATIONS = data.locations ?? [];
     });
   }
 }

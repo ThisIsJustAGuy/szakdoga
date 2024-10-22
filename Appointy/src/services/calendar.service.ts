@@ -11,9 +11,6 @@ declare var gapi: any
   providedIn: 'root'
 })
 export class CalendarService {
-  // API_KEY = 'AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc';
-  // CLIENT_ID = '703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com';
-  // CALENDAR_ID = '0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com';
 
   constructor(
     private http: HttpClient,

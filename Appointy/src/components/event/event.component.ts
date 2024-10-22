@@ -5,11 +5,14 @@ import {
 } from '@angular/core';
 import {CalendarEvent} from "../../classes/CalendarEvent";
 import {ModalService} from "../../services/modal.service";
+import {SlicePipe} from "@angular/common";
 
 @Component({
   selector: 'app-event',
   standalone: true,
-  imports: [],
+  imports: [
+    SlicePipe
+  ],
   templateUrl: './event.component.html',
   styleUrl: './event.component.scss'
 })

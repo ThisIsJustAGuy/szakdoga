@@ -5,7 +5,7 @@
       @if (eventDetails.inputsRequired) {
         <div class="d-flex flex-column summary_row">
           <label for="summary">Summary</label>
-          <input type="text" name="summary" id="summary" formControlName="summary">
+          <input type="text" name="summary" id="summary" formControlName="summary" class="form-control">
         </div>
       } @else {
         <h3 class="md-title">{{ eventDetails.calendarEvent?.summary ?? "No summary" }}</h3>
@@ -16,31 +16,42 @@
       @if (eventDetails.inputsRequired) {
         <div class="d-flex flex-column">
           <label for="description">Description</label>
-          <textarea name="description" id="description" formControlName="description" cols="30" rows="3"></textarea>
+          <textarea name="description" id="description" formControlName="description" cols="30" rows="3"  class="form-control"></textarea>
 
-          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
-            .{{ startMonth.padStart(2, '0') }}
-            .{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
 
           <div class="d-flex flex-row justify-content-between time_input">
             <div class="d-flex flex-column">
               <label for="start">Start</label>
-              <input type="time" name="start" id="start" formControlName="start">
+              <input type="time" name="start" id="start" formControlName="start" class="form-control">
             </div>
             <div class="d-flex flex-column justify-content-end">
               <pre> - </pre>
             </div>
             <div class="d-flex flex-column">
               <label for="end">End</label>
-              <input type="time" name="end" id="end" formControlName="end">
+              <input type="time" name="end" id="end" formControlName="end" class="form-control">
             </div>
           </div>
-          <div>
-            <div class="d-flex flex-column">
-              <label for="start">E-mail</label>
-              <input type="email" name="email" id="email" formControlName="email">
-            </div>
+          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
+            .{{ startMonth.padStart(2, '0') }}
+            .{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
+
+          <div class="d-flex flex-column">
+            <label for="location">Location</label>
+            <select name="location" id="location" formControlName="location" class="form-select">
+              <option value="0">No location</option>
+              @for (option of constService.LOCATIONS; track $index) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
           </div>
+
+
+          <div class="d-flex flex-column">
+            <label for="email">E-mail</label>
+            <input type="email" name="email" id="email" formControlName="email" class="form-control">
+          </div>
+
         </div>
       } @else {
         <p>{{ eventDetails.calendarEvent?.description }}</p>
