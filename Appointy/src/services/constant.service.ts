@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 
 @Injectable({
@@ -6,75 +6,116 @@ import {HttpClient} from "@angular/common/http";
 })
 export class ConstantService {
   private _REDIRECT_URL: string = "";
-  get REDIRECT_URL(): string{ return this._REDIRECT_URL; }
+  get REDIRECT_URL(): string {
+    return this._REDIRECT_URL;
+  }
 
   private _LOCALE: string = "";
-  get LOCALE(): string { return this._LOCALE; }
+  get LOCALE(): string {
+    return this._LOCALE;
+  }
 
   // Google
   private _API_KEY = '';
-  get API_KEY(): string { return this._API_KEY; }
+  get API_KEY(): string {
+    return this._API_KEY;
+  }
 
   private _CLIENT_ID = '';
-  get CLIENT_ID(): string { return this._CLIENT_ID; }
+  get CLIENT_ID(): string {
+    return this._CLIENT_ID;
+  }
 
   private _CALENDAR_ID = '';
-  get CALENDAR_ID(): string { return this._CALENDAR_ID; }
+  get CALENDAR_ID(): string {
+    return this._CALENDAR_ID;
+  }
 
   private _DISCOVERY_DOCS = '';
-  get DISCOVERY_DOCS(): string { return this._DISCOVERY_DOCS; }
+  get DISCOVERY_DOCS(): string {
+    return this._DISCOVERY_DOCS;
+  }
 
-  private _SCOPE:string =  '';
-  get SCOPE(): string { return this._SCOPE; }
+  private _SCOPE: string = '';
+  get SCOPE(): string {
+    return this._SCOPE;
+  }
 
   // saját email szerver
   private _EMAIL_BACKEND_URL: string = '';
-  get EMAIL_BACKEND_URL(): string { return this._EMAIL_BACKEND_URL; }
+  get EMAIL_BACKEND_URL(): string {
+    return this._EMAIL_BACKEND_URL;
+  }
 
   // emailjs
   private _SERVICE_ID: string = "";
-  get SERVICE_ID(): string { return this._SERVICE_ID; }
+  get SERVICE_ID(): string {
+    return this._SERVICE_ID;
+  }
 
   private _IN_PROGRESS_TEMPLATE_ID: string = ""; //új és edited
-  get IN_PROGRESS_TEMPLATE_ID(): string { return this._IN_PROGRESS_TEMPLATE_ID; }
+  get IN_PROGRESS_TEMPLATE_ID(): string {
+    return this._IN_PROGRESS_TEMPLATE_ID;
+  }
 
   private _FINISHED_TEMPLATE_ID: string = ""; //deleted és accepted
-  get FINISHED_TEMPLATE_ID(): string { return this._FINISHED_TEMPLATE_ID; }
+  get FINISHED_TEMPLATE_ID(): string {
+    return this._FINISHED_TEMPLATE_ID;
+  }
 
   private _USER_ID: string = "";
-  get USER_ID(): string { return this._USER_ID; }
+  get USER_ID(): string {
+    return this._USER_ID;
+  }
 
 
   private _BASE_URL: string = "";
-  get BASE_URL(): string { return this._BASE_URL; }
+  get BASE_URL(): string {
+    return this._BASE_URL;
+  }
 
   private _EDIT_ROUTE: string = "";
-  get EDIT_ROUTE(): string { return this._EDIT_ROUTE; }
+  get EDIT_ROUTE(): string {
+    return this._EDIT_ROUTE;
+  }
 
   private _ACCEPT_ROUTE: string = "";
-  get ACCEPT_ROUTE(): string { return this._ACCEPT_ROUTE; }
+  get ACCEPT_ROUTE(): string {
+    return this._ACCEPT_ROUTE;
+  }
 
   private _DELETE_ROUTE: string = "";
-  get DELETE_ROUTE(): string { return this._DELETE_ROUTE; }
+  get DELETE_ROUTE(): string {
+    return this._DELETE_ROUTE;
+  }
 
   private _CREATE_EVENT_ROUTE: string = ""; // új felvételnél
-  get CREATE_EVENT_ROUTE(): string { return this._CREATE_EVENT_ROUTE; }
+  get CREATE_EVENT_ROUTE(): string {
+    return this._CREATE_EVENT_ROUTE;
+  }
 
   private _EDIT_EVENT_ROUTE: string = ""; // meglévő (már felvett) szerk-nél
-  get EDIT_EVENT_ROUTE(): string { return this._EDIT_EVENT_ROUTE; }
+  get EDIT_EVENT_ROUTE(): string {
+    return this._EDIT_EVENT_ROUTE;
+  }
 
   private _COMPANY_EMAIL: string = "";
-  get COMPANY_EMAIL(): string { return this._COMPANY_EMAIL; }
+  get COMPANY_EMAIL(): string {
+    return this._COMPANY_EMAIL;
+  }
 
+  private _PATH = "constants.json";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
-  setConstants(path: string){
-    this.http.get(path).subscribe((data: any) => {
+  setConstants() {
+    this.http.get(this._PATH).subscribe((data: any) => {
       this._REDIRECT_URL = data.redirectURL ?? "";
       this._LOCALE = data.locale ?? "";
       this._API_KEY = data.apiKey ?? "";
       this._CLIENT_ID = data.clientID ?? "";
+      this._SCOPE = data.scope ?? "";
       this._CALENDAR_ID = data.calendarID ?? "";
       this._DISCOVERY_DOCS = data.discoveryDocs ?? "";
       this._EMAIL_BACKEND_URL = data.emailBackendURL ?? ""; //ez nincs a jsonben

@@ -15,5 +15,6 @@
   "deleteRoute": "delete-event",
   "createEventRoute": "create-calender-event",
   "editEventRoute": "edit-calendar-event",
-  "companyEmail": "bbalint0404@gmail.com"
+  "companyEmail": "bbalint0404@gmail.com",
+  "scope": "https://www.googleapis.com/auth/calendar"
 }

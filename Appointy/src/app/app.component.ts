@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {ConstantService} from "../services/constant.service";
 
@@ -11,18 +11,10 @@ import {ConstantService} from "../services/constant.service";
 })
 export class AppComponent implements OnInit {
 
-  constructor(
-    private constantService: ConstantService,
-    private elementRef: ElementRef
-  ) {
+  constructor(private constantService: ConstantService,) {
   }
 
   ngOnInit() {
-    const constsPath = this.elementRef.nativeElement.getAttribute('consts');
-
-    if (constsPath) {
-      this.constantService.setConstants(constsPath);
-    }
-
+    this.constantService.setConstants();
   }
 }

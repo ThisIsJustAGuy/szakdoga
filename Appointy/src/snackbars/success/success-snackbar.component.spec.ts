@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SuccessComponent } from './success-snackbar.component';
+import { SuccessSnackbarComponent } from './success-snackbar.component';
 
 describe('SuccessComponent', () => {
-  let component: SuccessComponent;
-  let fixture: ComponentFixture<SuccessComponent>;
+  let component: SuccessSnackbarComponent;
+  let fixture: ComponentFixture<SuccessSnackbarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SuccessComponent]
+      imports: [SuccessSnackbarComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SuccessComponent);
+    fixture = TestBed.createComponent(SuccessSnackbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

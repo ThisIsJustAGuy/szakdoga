@@ -4,11 +4,10 @@ import {provideRouter} from '@angular/router';
 import {routes} from './app.routes';
 import {provideHttpClient} from "@angular/common/http";
 import {provideOAuthClient} from "angular-oauth2-oidc";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
-import {
-  GoogleLoginProvider,
-} from '@abacritt/angularx-social-login';
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import {SocialAuthServiceConfig} from '@abacritt/angularx-social-login';
+import {GoogleLoginProvider} from '@abacritt/angularx-social-login';
+import data from "../../public/constants.json"; //emiatt nem lehet változó a path, ez csak fix literal lehet
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), provideHttpClient(),
@@ -20,13 +19,14 @@ export const appConfig: ApplicationConfig = {
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              '703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com', //CLIENT_ID
-              {scopes: 'https://www.googleapis.com/auth/calendar'}
+              data.clientID,
+              {scopes: data.scope}
             )
           }
         ],
         onError: (error) => {
           console.error(error);
         }
-      } as SocialAuthServiceConfig},]
+      } as SocialAuthServiceConfig
+    },]
 };
