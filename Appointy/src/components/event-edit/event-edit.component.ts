@@ -20,15 +20,24 @@ export class EventEditComponent implements OnInit {
 
   to_email: string | undefined;
   from_email: string | undefined;
+
   appointment_date: string | undefined;
   start_time: string | undefined;
   end_time: string | undefined;
+
   summary: string | undefined;
   description: string | undefined;
+
   edit_route: string | undefined;
   accept_route: string | undefined;
   delete_route: string | undefined;
+
   location: string | undefined;
+  attendees: string | undefined;
+
+  day_before: boolean = false;
+  that_day: boolean = false;
+  hour_before: boolean = false;
 
   eventForm: FormGroup;
 
@@ -50,12 +59,17 @@ export class EventEditComponent implements OnInit {
       this.summary = params['summary'];
       this.description = params['description'];
       this.location = params['location'];
+      this.attendees = params['attendees'];
+      this.day_before = params['day_before'] == "true";
+      this.that_day = params['that_day'] == "true";
+      this.hour_before = params['hour_before'] == "true";
 
       this.to_email = params['to_email']; //ide küldjük vissza
       this.from_email = params['reply_to']; //innen küldjük
       this.edit_route = params['edit_route'];
       this.accept_route = params['accept_route'];
       this.delete_route = params['delete_route'];
+
 
       this.eventForm = new FormGroup({
         summary: new FormControl(this.summary),
@@ -84,8 +98,12 @@ export class EventEditComponent implements OnInit {
 
     formValue.start = {dateTime: startTime.toISOString(), timeZone: timeZone};
     formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
+    formValue.attendees = this.attendees;
+    formValue.day_before = this.day_before;
+    formValue.that_day = this.that_day;
+    formValue.hour_before = this.hour_before;
 
-    this.emailService.sendMail(this.eventForm.value, this.to_email, this.from_email)
+    this.emailService.sendMail(formValue, this.to_email, this.from_email)
       .then((response: EmailJSResponseStatus | any) => {
         console.log('SUCCESS!', response.status, response.text);
         const snackBarRef = this.snackBar.open('Edit successful. You will be redirected.', 'Close', {

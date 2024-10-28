@@ -25,6 +25,13 @@ export class CreateCalendarEventComponent implements OnInit {
   summary: string | undefined;
   description: string | undefined;
   location: string | undefined;
+  attendees: [{ email: string }] | undefined;
+  reminders: {
+    useDefault: false,
+    overrides: { method: 'email'; minutes: number }[]
+  } = {useDefault: false, overrides: []};
+
+  to_email: string | undefined;
 
   returnValues: CalendarEvent = new CalendarEvent();
 
@@ -47,13 +54,44 @@ export class CreateCalendarEventComponent implements OnInit {
       this.description = params['description'];
       this.location = params['location'];
 
+      this.to_email = params['to_email'];
+      const attends = params['attendees'].length > 0 ? params['attendees'].split(',') : [];
+      this.attendees = [{'email': this.to_email!}];
+      for (const email of attends) {
+        this.attendees.push({'email': email});
+      }
+
+      const checkboxes = [
+        {day_before: params['day_before'] == "true"},
+        {that_day: params['that_day'] == "true"},
+        {hour_before: params['hour_before'] == "true"}
+      ];
+      for (const box of checkboxes) {
+        const [key, value] = Object.entries(box)[0];
+        if (value) {
+          if (key == "day_before")
+            this.reminders.overrides.push({method: 'email', minutes: 24 * 60});
+          if (key == "that_day"){
+            let mins: number = 0;
+            const time_parts = this.start_time!.split(":");
+            mins = +time_parts[0]*60 + +time_parts[1];
+            this.reminders.overrides.push({method: 'email', minutes: mins});
+          }
+          if (key == "hour_before")
+            this.reminders.overrides.push({method: 'email', minutes: 60});
+        }
+      }
+
+
       const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
       this.returnValues = new CalendarEvent(
         this.summary ?? 'No summary',
         {dateTime: "", timeZone: ""},
         {dateTime: "", timeZone: ""},
         this.description,
-        this.location
+        this.location,
+        this.attendees,
+        this.reminders
       );
 
       const startTime = new Date(this.appointment_date!);
@@ -72,10 +110,10 @@ export class CreateCalendarEventComponent implements OnInit {
 
     this.authService.authState.subscribe(() => {
       this.calendarService.loadGapi(this.returnValues).subscribe(() => {
-        const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close',  {
+        const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close', {
           duration: 8000,
         });
-        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.constService.REDIRECT_URL));
+        snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL));
       });
     });
   }

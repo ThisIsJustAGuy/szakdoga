@@ -33,7 +33,11 @@ export class EmailService {
       edit_route: this.constService.EDIT_ROUTE,
       summary: formValue.summary,
       description: formValue.description,
-      location: formValue.location
+      location: formValue.location,
+      attendees: formValue.attendees,
+      day_before: formValue.day_before,
+      that_day: formValue.that_day,
+      hour_before: formValue.hour_before,
     });
 
     const edit_route = this.constService.BASE_URL + "/" + this.constService.EDIT_ROUTE + "?" + params.toString();
@@ -75,6 +79,7 @@ export class EmailService {
       summary: formValue.summary,
       description: formValue.description,
       location: formValue.location,
+      attendees: formValue.attendees
     };
     let template_id;
 
@@ -133,18 +138,8 @@ export class EmailService {
       request_data.mail_text = (to_email ? edited_request_data.mail_text : new_request_data.mail_text);
       request_data.mail_details = (to_email ? edited_request_data.mail_details : new_request_data.mail_details);
       request_data.edit_route = edit_route; // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
-      request_data.accept_route = accept_route; // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
+      request_data.accept_route = (!to_email || to_email == this.constService.COMPANY_EMAIL) ? create_event_route : accept_route; // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
       request_data.delete_route = delete_route; // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
-
-      // request_data = {
-      //   mail_subject: (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject),
-      //   mail_title: (to_email ? edited_request_data.mail_title : new_request_data.mail_title),
-      //   mail_text: (to_email ? edited_request_data.mail_text : new_request_data.mail_text),
-      //   mail_details: (to_email ? edited_request_data.mail_details : new_request_data.mail_details),
-      //   edit_route: edit_route, // szerkesztéseket végez rajta a fél, a másik utána értesítőt kap erről, ő is szerkeszthet
-      //   accept_route: accept_route, // bekerül a naptárba, emailt kap az igénylő, hogy bekerült
-      //   delete_route: delete_route, // nem kerül be a naptárba, emailt kap a másik fél, hogy el lett utasítva
-      // };
 
       template_id = this.constService.IN_PROGRESS_TEMPLATE_ID;
 

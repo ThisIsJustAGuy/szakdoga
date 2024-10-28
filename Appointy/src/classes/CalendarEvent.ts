@@ -8,8 +8,8 @@ export class CalendarEvent {
     public end: {dateTime: string, timeZone: string} = {dateTime: "2000-01-01T12:00:00+02:00", timeZone: ''},
     public description?: string,
     public location?: string,
-    public attendees?: string[],
-    public id?: number,
+    public attendees?: [{email: string}],
+    public reminders?:{'useDefault': false, 'overrides':{'method': 'email', 'minutes': number}[]},
   ) {
     this.startDate = new Date(start.dateTime);
     this.endDate = new Date(end.dateTime);

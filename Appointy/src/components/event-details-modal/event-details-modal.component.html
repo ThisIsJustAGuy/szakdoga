@@ -4,8 +4,9 @@
     <div class="md-header">
       @if (eventDetails.inputsRequired) {
         <div class="d-flex flex-column summary_row">
-          <label for="summary">Summary</label>
-          <input type="text" name="summary" id="summary" formControlName="summary" class="form-control">
+          <label for="summary">Summary *</label>
+          <input type="text" name="summary" id="summary" formControlName="summary" class="form-control"
+                 placeholder="Title">
         </div>
       } @else {
         <h3 class="md-title">{{ eventDetails.calendarEvent?.summary ?? "No summary" }}</h3>
@@ -16,7 +17,8 @@
       @if (eventDetails.inputsRequired) {
         <div class="d-flex flex-column">
           <label for="description">Description</label>
-          <textarea name="description" id="description" formControlName="description" cols="30" rows="3"  class="form-control"></textarea>
+          <textarea name="description" id="description" formControlName="description" cols="30" rows="3"
+                    class="form-control" placeholder="Description"></textarea>
 
 
           <div class="d-flex flex-row justify-content-between time_input">
@@ -32,12 +34,13 @@
               <input type="time" name="end" id="end" formControlName="end" class="form-control">
             </div>
           </div>
-          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
+          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
+            .{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
 
           <div class="d-flex flex-column">
             <label for="location">Location</label>
             <select name="location" id="location" formControlName="location" class="form-select">
-              <option value="0">No location</option>
+              <option value="No location">No location</option>
               @for (option of constService.LOCATIONS; track $index) {
                 <option [value]="option">{{ option }}</option>
               }
@@ -46,21 +49,51 @@
 
 
           <div class="d-flex flex-column">
-            <label for="email">E-mail</label>
-            <input type="email" name="email" id="email" formControlName="email" class="form-control">
+            <label for="email">Your E-mail *</label>
+            <input type="email" name="email" id="email" formControlName="email" class="form-control"
+                   placeholder="your-email@example.com">
+          </div>
+
+          <div class="d-flex flex-column">
+            <label for="attendees">Other attendees' E-mails (comma separated)</label>
+            <input type="email" name="attendees" id="attendees" formControlName="attendees" class="form-control"
+                   placeholder="attendee@example.com,other@example.com" multiple>
+          </div>
+
+          <div class="d-flex flex-column">
+            <label>I want notifications:</label>
+            <div>
+              <input type="checkbox" class="form-check-input" id="day_before" name="day_before"
+                     formControlName="day_before">
+              <label class="form-check-label" for="day_before">On the day before the appointment</label>
+            </div>
+            <div>
+              <input type="checkbox" class="form-check-input" id="that_day" name="that_day" formControlName="that_day">
+              <label class="form-check-label" for="that_day">On the day of the appointment</label>
+            </div>
+            <div>
+              <input type="checkbox" class="form-check-input" id="hour_before" name="hour_before"
+                     formControlName="hour_before">
+              <label class="form-check-label" for="hour_before">An hour before the appointment</label>
+            </div>
           </div>
 
         </div>
+
       } @else {
-        @if(eventDetails.calendarEvent?.description){
-        <p>{{ eventDetails.calendarEvent?.description }}</p>
+        @if (eventDetails.calendarEvent?.description) {
+          <p>{{ eventDetails.calendarEvent?.description }}</p>
         }
-        @if(eventDetails.calendarEvent?.location){
-        <p>Location: {{ eventDetails.calendarEvent?.location }}</p>
+        @if (eventDetails.calendarEvent?.location) {
+          <p>Location: {{ eventDetails.calendarEvent?.location }}</p>
         }
 
-        <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
-        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}:{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }}- {{ eventDetails.calendarEvent?.endDate?.getHours() }}:{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
+        <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}
+          .{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
+        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}
+          :{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }}
+          - {{ eventDetails.calendarEvent?.endDate?.getHours() }}
+          :{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
       }
     </div>
     <div class="md-footer">

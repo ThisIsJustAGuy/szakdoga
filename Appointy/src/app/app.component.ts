@@ -3,7 +3,7 @@ import {RouterOutlet} from '@angular/router';
 import {ConstantService} from "../services/constant.service";
 
 @Component({
-  selector: 'app-root',
+  selector: 'Appointy',
   standalone: true,
   imports: [RouterOutlet],
   templateUrl: './app.component.html',

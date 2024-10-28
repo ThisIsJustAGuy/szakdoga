@@ -68,6 +68,7 @@ export class CalendarService {
     await gapi.client.calendar.events.insert({
       'calendarId': this.constService.CALENDAR_ID,
       'resource': event,
+      'sendNotifications': true
     }).execute((e: any) => console.log(e));
   }
 

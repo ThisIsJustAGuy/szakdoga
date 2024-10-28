@@ -33,12 +33,16 @@ export class EventDetailsModalComponent implements AfterContentInit {
 
   ngAfterContentInit() {
     this.eventForm = new FormGroup({
-      summary: new FormControl(''),
+      summary: new FormControl('', [Validators.required]),
       description: new FormControl(''),
       start: new FormControl(this.eventDetails.calendarEvent?.startDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
       end: new FormControl(this.eventDetails.calendarEvent?.endDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
-      location: new FormControl('0'),
-      email: new FormControl('', [Validators.required, Validators.email])
+      location: new FormControl('No location'),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      attendees: new FormControl(''),
+      day_before: new FormControl(false),
+      that_day: new FormControl(false),
+      hour_before: new FormControl(false),
     });
 
     this.startMonth = (this.eventDetails.calendarEvent?.startDate?.getMonth()! + 1).toString();
@@ -64,10 +68,7 @@ export class EventDetailsModalComponent implements AfterContentInit {
       formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
     }
 
-    // lehessen állítani, hogy be lehessen-e állítani a title-t
-    // if (formValue.summary == ''){
-    //   formValue.summary = "Reserved";
-    // }
+    formValue.attendees = formValue.attendees.split(',');
 
     this.emailService.sendMail(formValue).then((response: EmailJSResponseStatus | any) => {
       console.log('SUCCESS!', response.status, response.text);
