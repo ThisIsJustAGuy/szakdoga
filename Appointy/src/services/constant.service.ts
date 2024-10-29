@@ -52,6 +52,11 @@ export class ConstantService implements OnDestroy {
   }
 
   // emailjs
+  private _EMAILJS_PUBLIC_KEY: string = "";
+  get EMAILJS_PUBLIC_KEY(): string {
+    return this._EMAILJS_PUBLIC_KEY
+  }
+
   private _SERVICE_ID: string = "";
   get SERVICE_ID(): string {
     return this._SERVICE_ID;
@@ -136,6 +141,7 @@ export class ConstantService implements OnDestroy {
       this._CALENDAR_IDS = data.calendarIDs ?? [];
       this._DISCOVERY_DOCS = data.discoveryDocs ?? "";
       this._EMAIL_BACKEND_URL = data.emailBackendURL ?? ""; //ez nincs a jsonben
+      this._EMAILJS_PUBLIC_KEY = data.emailjsPublicKey ?? "";
       this._SERVICE_ID = data.serviceID ?? "";
       this._IN_PROGRESS_TEMPLATE_ID = data.inProgressTemplateID ?? "";
       this._FINISHED_TEMPLATE_ID = data.finishedTemplateID ?? "";
@@ -150,7 +156,6 @@ export class ConstantService implements OnDestroy {
       this._LOCATIONS = data.locations ?? [];
       this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
 
-      console.log("constants set");
       this.setupFinished.next(true);
     }));
   }

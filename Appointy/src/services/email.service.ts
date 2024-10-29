@@ -14,7 +14,15 @@ export class EmailService {
   constructor(
     private constService: ConstantService,
     private http: HttpClient
-  ) {}
+  ) {
+    this.initEmailjs();
+  }
+
+  initEmailjs() {
+    if (this.constService.EMAIL_BACKEND_URL == "") {
+      emailjs.init(this.constService.EMAILJS_PUBLIC_KEY);
+    }
+  }
 
   sendMail(formValue: any, to_email?: string, from_email?: string, finishState: string = "inProgress") {
     const appDate = fromZonedTime(formValue.start?.dateTime, formValue.start?.timeZone);
