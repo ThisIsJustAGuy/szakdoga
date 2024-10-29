@@ -42,12 +42,12 @@
 }
 
 .date_display {
-  min-width: 200px;
+  padding: 5px;
   text-align: center;
 }
 
-.date_container {
-  height: $date-container-height;
+.btn-rounded {
+  border-radius: 50%;
 }
 
 .background {
