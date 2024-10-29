@@ -3,7 +3,10 @@
   "locale": "hu-HU",
   "apiKey": "AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc",
   "clientID": "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com",
-  "calendarID": "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com",
+  "calendarIDs": [
+    "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com",
+    "76f7dd5c8f8118dbb084270794f6d24d6998ff95dafb423138b36f2c094d69e2@group.calendar.google.com"
+  ],
   "discoveryDocs": "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
   "serviceID": "service_vsa8qqp",
   "inProgressTemplateID": "template_h0h44bn",
@@ -17,5 +20,9 @@
   "editEventRoute": "edit-calendar-event",
   "companyEmail": "bbalint0404@gmail.com",
   "scope": "https://www.googleapis.com/auth/calendar",
-  "locations": ["A location", "B location", "C location"]
+  "locations": [
+    "A location",
+    "B location"
+  ],
+  "maxAttendees": [5, 2]
 }

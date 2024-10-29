@@ -39,7 +39,7 @@
 
           <div class="d-flex flex-column">
             <label for="location">Location</label>
-            <select name="location" id="location" formControlName="location" class="form-select">
+            <select name="location" id="location" formControlName="location" class="form-select" (change)="locationChanged($event)">
               <option value="No location">No location</option>
               @for (option of constService.LOCATIONS; track $index) {
                 <option [value]="option">{{ option }}</option>
@@ -55,7 +55,7 @@
           </div>
 
           <div class="d-flex flex-column">
-            <label for="attendees">Other attendees' E-mails (comma separated)</label>
+            <label for="attendees">Other attendees' E-mails (comma separated, max {{max_attendees}} addresses)</label>
             <input type="email" name="attendees" id="attendees" formControlName="attendees" class="form-control"
                    placeholder="attendee@example.com,other@example.com" multiple>
           </div>

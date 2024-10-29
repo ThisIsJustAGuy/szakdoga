@@ -1,5 +1,5 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {forkJoin, map, Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
 import {CalendarEvent} from "../classes/CalendarEvent";
 import {GoogleLoginProvider, SocialAuthService} from "@abacritt/angularx-social-login";
@@ -19,7 +19,7 @@ export class CalendarService {
   ) {
   }
 
-  getCalendarEvents(date: Date = new Date()): Observable<any> {
+  getCalendarEvents(date: Date = new Date()): Observable<any[]> {
     const startOfWeek = this.getStartOfWeek(date);
 
     const endOfWeek = this.getEndOfWeek(date);
@@ -27,9 +27,16 @@ export class CalendarService {
     const startDateTime = startOfWeek.toISOString();
     const endDateTime = endOfWeek.toISOString();
 
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${this.constService.CALENDAR_ID}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.constService.API_KEY}`;
+    const requests: Observable<any>[] = [];
 
-    return this.http.get(url);
+    for (let i = 0; i < this.constService.CALENDAR_IDS.length; i++) {
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${this.constService.CALENDAR_IDS[i]}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.constService.API_KEY}`;
+      requests.push(this.http.get(url));
+    }
+
+    return forkJoin(requests).pipe(
+      map(res => res.flat())
+    );
   }
 
   getStartOfWeek(date: Date): Date {
@@ -57,7 +64,7 @@ export class CalendarService {
         discoveryDocs: [this.constService.DISCOVERY_DOCS],
       }).then(() => {
         this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then(() => {
-          this.createEvent(event).then(() => e.emit(true) );
+          this.createEvent(event).then(() => e.emit(true));
         });
       })
     });
@@ -65,8 +72,14 @@ export class CalendarService {
   }
 
   async createEvent(event: CalendarEvent) {
+    let i: number = 0;
+    for (let index = 0; index < this.constService.LOCATIONS.length; index++) {
+      if (this.constService.LOCATIONS[index] == event.location)
+        i = index;
+    }
+
     await gapi.client.calendar.events.insert({
-      'calendarId': this.constService.CALENDAR_ID,
+      'calendarId': this.constService.CALENDAR_IDS[i],
       'resource': event,
       'sendNotifications': true
     }).execute((e: any) => console.log(e));

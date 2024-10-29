@@ -26,9 +26,9 @@ export class ConstantService {
     return this._CLIENT_ID;
   }
 
-  private _CALENDAR_ID = '';
-  get CALENDAR_ID(): string {
-    return this._CALENDAR_ID;
+  private _CALENDAR_IDS: string[] = [];
+  get CALENDAR_IDS(): string[] {
+    return this._CALENDAR_IDS;
   }
 
   private _DISCOVERY_DOCS = '';
@@ -105,8 +105,13 @@ export class ConstantService {
   }
 
   private _LOCATIONS: string[] = [];
-  get LOCATIONS(): string[]{
+  get LOCATIONS(): string[] {
     return this._LOCATIONS;
+  }
+
+  private _MAX_ATTENDEES: number | number[] = 100;
+  get MAX_ATTENDEES(): number | number[] {
+    return this._MAX_ATTENDEES;
   }
 
   private _PATH = "constants.json";
@@ -121,7 +126,7 @@ export class ConstantService {
       this._API_KEY = data.apiKey ?? "";
       this._CLIENT_ID = data.clientID ?? "";
       this._SCOPE = data.scope ?? "";
-      this._CALENDAR_ID = data.calendarID ?? "";
+      this._CALENDAR_IDS = data.calendarIDs ?? [];
       this._DISCOVERY_DOCS = data.discoveryDocs ?? "";
       this._EMAIL_BACKEND_URL = data.emailBackendURL ?? ""; //ez nincs a jsonben
       this._SERVICE_ID = data.serviceID ?? "";
@@ -136,6 +141,7 @@ export class ConstantService {
       this._EDIT_EVENT_ROUTE = data.editEventRoute ?? "";
       this._COMPANY_EMAIL = data.companyEmail ?? "";
       this._LOCATIONS = data.locations ?? [];
+      this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
     });
   }
 }

@@ -22,6 +22,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
   startMonth: string = '';
   endMonth: string = '';
 
+  max_attendees: number = 0;
+
   constructor(
     private modalService: ModalService,
     private emailService: EmailService,
@@ -47,6 +49,20 @@ export class EventDetailsModalComponent implements AfterContentInit {
 
     this.startMonth = (this.eventDetails.calendarEvent?.startDate?.getMonth()! + 1).toString();
     this.endMonth = (this.eventDetails.calendarEvent?.endDate?.getMonth()! + 1).toString();
+
+    this.updateMaxAttendees(0);
+  }
+
+  locationChanged(event: Event) {
+    const selectedIndex = (event.target as HTMLSelectElement).selectedIndex;
+    this.updateMaxAttendees(selectedIndex);
+  }
+
+  updateMaxAttendees(selectedIndex: number) {
+    if (Array.isArray(this.constService.MAX_ATTENDEES))
+      this.max_attendees = this.constService.MAX_ATTENDEES[selectedIndex == 0 ? 0 : selectedIndex - 1];
+    else
+      this.max_attendees = this.constService.MAX_ATTENDEES;
   }
 
   saveChanges() {
@@ -68,11 +84,12 @@ export class EventDetailsModalComponent implements AfterContentInit {
       formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
     }
 
-    formValue.attendees = formValue.attendees.split(',');
+    //-1, mert bele lesz rakva az event kérelmezője is
+    formValue.attendees = formValue.attendees.split(',').slice(0, this.max_attendees - 1);
 
     this.emailService.sendMail(formValue).then((response: EmailJSResponseStatus | any) => {
       console.log('SUCCESS!', response.status, response.text);
-      this.snackBar.open('Notification sent.', 'Close',  {
+      this.snackBar.open('Notification sent.', 'Close', {
         duration: 8000,
       });
       this.closeModal();
@@ -84,4 +101,5 @@ export class EventDetailsModalComponent implements AfterContentInit {
   closeModal() {
     this.modalService.closeModal();
   }
+
 }

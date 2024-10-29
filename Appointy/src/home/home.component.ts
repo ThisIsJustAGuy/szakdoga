@@ -84,7 +84,10 @@ export class HomeComponent implements OnInit {
   initCalendar() {
     const sub: Subscription = this.calendarService.getCalendarEvents()
       .subscribe((res) => {
-        this.displayEvents(res.items);
+        for (let i = 1; i < res.length; i++) {
+          res[0].items = [...res[0].items, ...res[i].items];
+        }
+        this.displayEvents(res[0].items);
         sub.unsubscribe();
       })
   }
@@ -164,7 +167,10 @@ export class HomeComponent implements OnInit {
 
     const sub: Subscription = this.calendarService.getCalendarEvents(this.currentDate)
       .subscribe((res) => {
-        this.displayEvents(res.items);
+        for (let i = 1; i < res.length; i++) {
+          res[0].items = [...res[0].items, ...res[i].items];
+        }
+        this.displayEvents(res[0].items);
         sub.unsubscribe();
       })
   }
