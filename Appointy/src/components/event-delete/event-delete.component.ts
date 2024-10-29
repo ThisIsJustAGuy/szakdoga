@@ -35,6 +35,11 @@ export class EventDeleteComponent implements OnInit, OnDestroy {
     ) {}
 
   ngOnInit() {
+    this.subs.push(this.constService.setupFinished.subscribe((_res:boolean) => this.initEmail()));
+    this.constService.setConstants();
+  }
+
+  initEmail(){
     this.subs.push(this.route.queryParams.subscribe(params => {
       this.appointment_date = params['appointment_date'];
       this.start_time = params['start_time'];

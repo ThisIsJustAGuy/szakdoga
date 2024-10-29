@@ -66,10 +66,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
 
-    this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => {
-      console.log("init starting");
-      this.initCalendar();
-    }));
+    this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => this.initCalendar()));
     this.constService.setConstants();
   }
 

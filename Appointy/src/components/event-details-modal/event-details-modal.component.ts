@@ -34,6 +34,10 @@ export class EventDetailsModalComponent implements AfterContentInit {
   }
 
   ngAfterContentInit() {
+    this.initForm();
+  }
+
+  initForm(){
     this.eventForm = new FormGroup({
       summary: new FormControl('', [Validators.required]),
       description: new FormControl(''),

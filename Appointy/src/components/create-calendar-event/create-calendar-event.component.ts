@@ -51,6 +51,11 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.subs.push(this.constService.setupFinished.subscribe((_res:boolean) => this.createEvent()));
+    this.constService.setConstants();
+  }
+
+  createEvent(){
     this.subs.push(this.route.queryParams.subscribe(params => {
       this.appointment_date = params['appointment_date'];
       this.start_time = params['start_time'];

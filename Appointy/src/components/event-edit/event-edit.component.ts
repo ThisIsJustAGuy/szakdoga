@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterContentInit, Component, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {EmailService} from "../../services/email.service";
@@ -17,7 +17,7 @@ import {Subscription} from "rxjs";
   templateUrl: './event-edit.component.html',
   styleUrl: './event-edit.component.scss'
 })
-export class EventEditComponent implements OnInit, OnDestroy {
+export class EventEditComponent implements AfterContentInit, OnDestroy {
 
   to_email: string | undefined;
   from_email: string | undefined;
@@ -54,7 +54,13 @@ export class EventEditComponent implements OnInit, OnDestroy {
     this.eventForm = new FormGroup({});
   }
 
-  ngOnInit(): void {
+  ngAfterContentInit(): void {
+    this.subs.push(this.constService.setupFinished.subscribe());
+    this.constService.setConstants();
+    this.initForm();
+  }
+
+  initForm(){
     this.subs.push(this.route.queryParams.subscribe(params => {
       this.appointment_date = params['appointment_date'];
       this.start_time = params['start_time'];
