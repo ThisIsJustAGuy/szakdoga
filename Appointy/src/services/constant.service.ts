@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 
 @Injectable({
@@ -10,7 +10,7 @@ export class ConstantService {
     return this._REDIRECT_URL;
   }
 
-  private _LOCALE: string = "";
+  private _LOCALE: string = "en-US";
   get LOCALE(): string {
     return this._LOCALE;
   }
@@ -116,6 +116,8 @@ export class ConstantService {
 
   private _PATH = "constants.json";
 
+  public setupFinished: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   constructor(private http: HttpClient) {
   }
 
@@ -142,6 +144,8 @@ export class ConstantService {
       this._COMPANY_EMAIL = data.companyEmail ?? "";
       this._LOCATIONS = data.locations ?? [];
       this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
+
+      this.setupFinished.emit(true);
     });
   }
 }

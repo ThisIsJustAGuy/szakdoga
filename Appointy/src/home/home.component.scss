@@ -16,6 +16,7 @@
   min-width: $min-width;
   max-height: calc(100% - $column-top-padding - var(--hour-cell-height) - $date-container-height);
   min-height: 100%;
+  scrollbar-width: none;
 }
 
 .weekdays{

@@ -1,8 +1,4 @@
-import {
-  ApplicationRef, ChangeDetectorRef,
-  Component,
-  ComponentRef, OnInit,
-} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, OnInit} from '@angular/core';
 import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
 import {CalendarService} from "../services/calendar.service";
@@ -60,7 +56,6 @@ export class HomeComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     protected constService: ConstantService
   ) {
-    this.initCalendar();
     this.currentDate = new Date();
     this.middleDate = new Date();
     this.now = new Date();
@@ -68,6 +63,10 @@ export class HomeComponent implements OnInit {
 
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
+
+    this.constService.setupFinished.subscribe(() => {
+      this.initCalendar();
+    })
   }
 
   initEventDetailsModal() {
