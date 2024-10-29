@@ -1,10 +1,14 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {Subject, Subscription} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConstantService {
+export class ConstantService implements OnDestroy {
+
+  private subs: Subscription[] = [];
+
   private _REDIRECT_URL: string = "";
   get REDIRECT_URL(): string {
     return this._REDIRECT_URL;
@@ -116,13 +120,14 @@ export class ConstantService {
 
   private _PATH = "constants.json";
 
-  public setupFinished: EventEmitter<boolean> = new EventEmitter<boolean>();
+  public setupFinished: Subject<boolean> = new Subject<boolean>();
+
 
   constructor(private http: HttpClient) {
   }
 
   setConstants() {
-    this.http.get(this._PATH).subscribe((data: any) => {
+    this.subs.push(this.http.get(this._PATH).subscribe((data: any) => {
       this._REDIRECT_URL = data.redirectURL ?? "";
       this._LOCALE = data.locale ?? "";
       this._API_KEY = data.apiKey ?? "";
@@ -145,7 +150,13 @@ export class ConstantService {
       this._LOCATIONS = data.locations ?? [];
       this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
 
-      this.setupFinished.emit(true);
-    });
+      this.setupFinished.next(true);
+    }));
+  }
+
+  ngOnDestroy(){
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }

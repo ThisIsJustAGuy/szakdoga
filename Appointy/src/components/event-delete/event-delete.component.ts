@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {EmailService} from "../../services/email.service";
 import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ConstantService} from "../../services/constant.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'Appointy-event-delete',
@@ -12,7 +13,7 @@ import {ConstantService} from "../../services/constant.service";
   templateUrl: './event-delete.component.html',
   styleUrl: './event-delete.component.scss'
 })
-export class EventDeleteComponent implements OnInit {
+export class EventDeleteComponent implements OnInit, OnDestroy {
 
   to_email: string | undefined;
   from_email: string | undefined;
@@ -23,6 +24,8 @@ export class EventDeleteComponent implements OnInit {
   description: string | undefined;
   location: string | undefined;
 
+  private subs: Subscription[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private emailService: EmailService,
@@ -32,7 +35,7 @@ export class EventDeleteComponent implements OnInit {
     ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+    this.subs.push(this.route.queryParams.subscribe(params => {
       this.appointment_date = params['appointment_date'];
       this.start_time = params['start_time'];
       this.end_time = params['end_time'];
@@ -69,7 +72,7 @@ export class EventDeleteComponent implements OnInit {
 
 
       this.sendEmail(returnValues);
-    });
+    }));
   }
 
   sendEmail(returnValues: any){
@@ -79,9 +82,15 @@ export class EventDeleteComponent implements OnInit {
         const snackBarRef = this.snackBar.open('Notification sent. You will be redirected.', 'Close',  {
           duration: 8000,
         });
-        snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.constService.REDIRECT_URL));
+        this.subs.push(snackBarRef.afterDismissed().subscribe(()=> this.router.navigateByUrl(this.constService.REDIRECT_URL)));
       }, (error) => {
         console.error('FAILED...', error);
       });
+  }
+
+  ngOnDestroy(){
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }

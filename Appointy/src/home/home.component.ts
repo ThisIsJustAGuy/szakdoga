@@ -1,4 +1,4 @@
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, OnInit} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, OnDestroy, OnInit} from '@angular/core';
 import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
 import {CalendarService} from "../services/calendar.service";
@@ -27,7 +27,7 @@ import {ConstantService} from "../services/constant.service";
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   weekdays: string[] = [];
   dates: Date[] = [];
 
@@ -44,6 +44,8 @@ export class HomeComponent implements OnInit {
 
   eventDetailsVisible: boolean = false;
   eventDetails!: EventDetails;
+
+  private subs: Subscription[] = [];
 
   ngOnInit() {
     this.initEventDetailsModal();
@@ -64,31 +66,30 @@ export class HomeComponent implements OnInit {
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
 
-    this.constService.setupFinished.subscribe(() => {
+    this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => {
       this.initCalendar();
-    })
+    }))
   }
 
   initEventDetailsModal() {
-    this.modalService.eventDetailsState$.subscribe(state => {
+    this.subs.push(this.modalService.eventDetailsState$.subscribe(state => {
       if (state.calendarEvent || state.inputsRequired) {
         this.eventDetails = state;
       }
       this.eventDetailsVisible = state.showDetails ?? false;
 
       this.cdr.detectChanges();
-    })
+    }))
   }
 
   initCalendar() {
-    const sub: Subscription = this.calendarService.getCalendarEvents()
+    this.subs.push(this.calendarService.getCalendarEvents()
       .subscribe((res) => {
         for (let i = 1; i < res.length; i++) {
           res[0].items = [...res[0].items, ...res[i].items];
         }
         this.displayEvents(res[0].items);
-        sub.unsubscribe();
-      })
+      }))
   }
 
   displayEvents(results: CalendarEvent[]) {
@@ -164,14 +165,13 @@ export class HomeComponent implements OnInit {
     this.fillDatesOfWeek();
     this.destroyEvents();
 
-    const sub: Subscription = this.calendarService.getCalendarEvents(this.currentDate)
+    this.subs.push(this.calendarService.getCalendarEvents(this.currentDate)
       .subscribe((res) => {
         for (let i = 1; i < res.length; i++) {
           res[0].items = [...res[0].items, ...res[i].items];
         }
         this.displayEvents(res[0].items);
-        sub.unsubscribe();
-      })
+      }))
   }
 
   fillDatesOfWeek() {
@@ -239,6 +239,12 @@ export class HomeComponent implements OnInit {
   updateNowMarker(nowContainer: HTMLDivElement) {
     if (this.nowMarkerRef) {
       nowContainer.style.marginTop = this.nowMarkerRef.instance.updateMarker();
+    }
+  }
+
+  ngOnDestroy(){
+    for (const sub of this.subs) {
+      sub.unsubscribe();
     }
   }
 }

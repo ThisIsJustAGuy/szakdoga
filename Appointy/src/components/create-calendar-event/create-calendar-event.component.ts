@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CalendarService} from "../../services/calendar.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {CalendarEvent} from "../../classes/CalendarEvent";
 import {GoogleSigninButtonModule, SocialAuthService} from "@abacritt/angularx-social-login";
 import {ConstantService} from "../../services/constant.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-create-calendar-event',
@@ -17,7 +18,7 @@ import {ConstantService} from "../../services/constant.service";
 })
 
 
-export class CreateCalendarEventComponent implements OnInit {
+export class CreateCalendarEventComponent implements OnInit, OnDestroy {
 
   appointment_date: string | undefined;
   start_time: string | undefined;
@@ -35,6 +36,8 @@ export class CreateCalendarEventComponent implements OnInit {
 
   returnValues: CalendarEvent = new CalendarEvent();
 
+  private subs: Subscription[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private calendarService: CalendarService,
@@ -46,7 +49,7 @@ export class CreateCalendarEventComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
+    this.subs.push(this.route.queryParams.subscribe(params => {
       this.appointment_date = params['appointment_date'];
       this.start_time = params['start_time'];
       this.end_time = params['end_time'];
@@ -106,15 +109,21 @@ export class CreateCalendarEventComponent implements OnInit {
 
       this.returnValues.start = {dateTime: startTime.toISOString(), timeZone: time_zone};
       this.returnValues.end = {dateTime: endTime.toISOString(), timeZone: time_zone};
-    });
+    }));
 
-    this.authService.authState.subscribe(() => {
-      this.calendarService.loadGapi(this.returnValues).subscribe(() => {
+    this.subs.push(this.authService.authState.subscribe(() => {
+      this.subs.push(this.calendarService.loadGapi(this.returnValues).subscribe(() => {
         const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close', {
           duration: 8000,
         });
-        snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL));
-      });
-    });
+        this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
+      }));
+    }));
+  }
+
+  ngOnDestroy(){
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
   }
 }
