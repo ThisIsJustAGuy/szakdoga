@@ -1,8 +1,7 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {forkJoin, map, Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
 import {CalendarEvent} from "../classes/CalendarEvent";
-import {GoogleLoginProvider, SocialAuthService} from "@abacritt/angularx-social-login";
 import {ConstantService} from "./constant.service";
 
 declare var gapi: any
@@ -14,7 +13,6 @@ export class CalendarService {
 
   constructor(
     private http: HttpClient,
-    private authService: SocialAuthService,
     private constService: ConstantService
   ) {
   }
@@ -51,24 +49,6 @@ export class CalendarService {
     const end = this.getStartOfWeek(date);
     end.setDate(end.getDate() + 6);
     return end;
-  }
-
-
-  loadGapi(event: CalendarEvent) {
-
-    let e = new EventEmitter<boolean>;
-
-    gapi.load('client', () => {
-      gapi.client.init({
-        apiKey: this.constService.API_KEY,
-        discoveryDocs: [this.constService.DISCOVERY_DOCS],
-      }).then(() => {
-        this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then(() => {
-          this.createEvent(event).then(() => e.emit(true));
-        });
-      })
-    });
-    return e;
   }
 
   async createEvent(event: CalendarEvent) {

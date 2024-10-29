@@ -3,9 +3,11 @@ import {CalendarService} from "../../services/calendar.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {CalendarEvent} from "../../classes/CalendarEvent";
-import {GoogleSigninButtonModule, SocialAuthService} from "@abacritt/angularx-social-login";
+import {GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthService} from "@abacritt/angularx-social-login";
 import {ConstantService} from "../../services/constant.service";
 import {Subscription} from "rxjs";
+
+declare var gapi: any
 
 @Component({
   selector: 'app-create-calendar-event',
@@ -112,12 +114,26 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
     }));
 
     this.subs.push(this.authService.authState.subscribe(() => {
-      this.subs.push(this.calendarService.loadGapi(this.returnValues).subscribe(() => {
-        const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close', {
-          duration: 8000,
-        });
-        this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
-      }));
+
+      gapi.load('client', () => {
+        gapi.client.init({
+          apiKey: this.constService.API_KEY,
+          discoveryDocs: [this.constService.DISCOVERY_DOCS],
+        }).then(() => {
+
+          this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then(() => {
+
+            this.calendarService.createEvent(this.returnValues).then(() => {
+
+              const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close', {
+                duration: 8000,
+              });
+
+              this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
+            });
+          });
+        })
+      });
     }));
   }
 
