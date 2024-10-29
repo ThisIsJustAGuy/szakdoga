@@ -1,6 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {ConstantService} from "../services/constant.service";
 import {HomeComponent} from "../home/home.component";
 
 @Component({
@@ -10,12 +9,5 @@ import {HomeComponent} from "../home/home.component";
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
-
-  constructor(private constantService: ConstantService,) {
-  }
-
-  ngOnInit() {
-    this.constantService.setConstants();
-  }
+export class AppComponent {
 }

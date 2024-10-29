@@ -129,7 +129,7 @@ export class ConstantService implements OnDestroy {
   setConstants() {
     this.subs.push(this.http.get(this._PATH).subscribe((data: any) => {
       this._REDIRECT_URL = data.redirectURL ?? "";
-      this._LOCALE = data.locale ?? "";
+      this._LOCALE = data.locale ?? "en-US";
       this._API_KEY = data.apiKey ?? "";
       this._CLIENT_ID = data.clientID ?? "";
       this._SCOPE = data.scope ?? "";
@@ -150,6 +150,7 @@ export class ConstantService implements OnDestroy {
       this._LOCATIONS = data.locations ?? [];
       this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
 
+      console.log("constants set");
       this.setupFinished.next(true);
     }));
   }

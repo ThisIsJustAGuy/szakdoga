@@ -14,7 +14,7 @@ import {EventDetails} from "../classes/EventDetails";
 import {ConstantService} from "../services/constant.service";
 
 @Component({
-  selector: 'app-home',
+  selector: 'Appointy-home',
   standalone: true,
   imports: [
     CalendarColumnComponent,
@@ -67,8 +67,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.fillDatesOfWeek();
 
     this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => {
+      console.log("init starting");
       this.initCalendar();
-    }))
+    }));
+    this.constService.setConstants();
   }
 
   initEventDetailsModal() {
