@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-now-marker',
+  selector: 'Appointy-now-marker',
   standalone: true,
   imports: [],
   templateUrl: './now-marker.component.html',

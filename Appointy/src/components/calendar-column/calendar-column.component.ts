@@ -3,7 +3,7 @@ import {ModalService} from "../../services/modal.service";
 import {CalendarEvent} from "../../classes/CalendarEvent";
 
 @Component({
-  selector: 'app-calendar-column',
+  selector: 'Appointy-calendar-column',
   standalone: true,
   imports: [],
   templateUrl: './calendar-column.component.html',

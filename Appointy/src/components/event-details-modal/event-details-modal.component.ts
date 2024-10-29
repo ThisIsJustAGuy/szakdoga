@@ -8,7 +8,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ConstantService} from "../../services/constant.service";
 
 @Component({
-  selector: 'app-event-details-modal',
+  selector: 'Appointy-event-details-modal',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './event-details-modal.component.html',

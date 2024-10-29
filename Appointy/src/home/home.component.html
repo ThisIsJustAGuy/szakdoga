@@ -1,6 +1,6 @@
 <div class="d-flex flex-column fullscreen">
 
-  <app-event-details-modal *ngIf="eventDetailsVisible" [eventDetails]="eventDetails"/>
+  <Appointy-event-details-modal *ngIf="eventDetailsVisible" [eventDetails]="eventDetails"/>
 
   <div class="d-flex flex-row justify-content-center align-items-center date_container">
     <button class="me-4 btn btn-secondary btn-sm" (click)="prevWeek()"><</button>
@@ -15,17 +15,17 @@
       <div class="d-flex flex-row">
         <div class="filler hours_column"></div>
         @for (day of weekdays; track $index) {
-          <app-weekday [day]="day" [date]="dates[$index].getDate()" class="weekdays"/>
+          <Appointy-weekday [day]="day" [date]="dates[$index].getDate()" class="weekdays"/>
         }
       </div>
 
       <div class="d-flex flex-row grow scrollable" id="scrollable">
         <div class="hours_column">
-          <app-hours-column/>
+          <Appointy-hours-column/>
         </div>
         @for (i of dates; track $index) {
           <div class="d-flex flex-column grow">
-            <app-calendar-column [date]="dates[$index]" class="day_column"/>
+            <Appointy-calendar-column [date]="dates[$index]" class="day_column"/>
           </div>
         }
       </div>

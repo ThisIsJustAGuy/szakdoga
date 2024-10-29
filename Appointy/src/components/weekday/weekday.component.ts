@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-weekday',
+  selector: 'Appointy-weekday',
   standalone: true,
   imports: [],
   templateUrl: './weekday.component.html',

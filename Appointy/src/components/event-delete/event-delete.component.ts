@@ -6,7 +6,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ConstantService} from "../../services/constant.service";
 
 @Component({
-  selector: 'app-event-delete',
+  selector: 'Appointy-event-delete',
   standalone: true,
   imports: [],
   templateUrl: './event-delete.component.html',

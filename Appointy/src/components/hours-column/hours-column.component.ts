@@ -1,7 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 
 @Component({
-  selector: 'app-hours-column',
+  selector: 'Appointy-hours-column',
   standalone: true,
   imports: [],
   templateUrl: './hours-column.component.html',

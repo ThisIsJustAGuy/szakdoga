@@ -8,7 +8,7 @@ import {ModalService} from "../../services/modal.service";
 import {SlicePipe} from "@angular/common";
 
 @Component({
-  selector: 'app-event',
+  selector: 'Appointy-event',
   standalone: true,
   imports: [
     SlicePipe

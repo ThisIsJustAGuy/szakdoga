@@ -6,7 +6,7 @@ import {EmailJSResponseStatus} from "emailjs-com";
 import {ConstantService} from "../../services/constant.service";
 
 @Component({
-  selector: 'app-event-accept',
+  selector: 'Appointy-event-accept',
   standalone: true,
   imports: [],
   templateUrl: './event-accept.component.html',
