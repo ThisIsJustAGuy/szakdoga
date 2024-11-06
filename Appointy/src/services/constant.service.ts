@@ -123,7 +123,7 @@ export class ConstantService implements OnDestroy {
     return this._MAX_ATTENDEES;
   }
 
-  private _PATH = "constants.json";
+  private _PATH = "appointy.json";
 
   public setupFinished: Subject<boolean> = new Subject<boolean>();
 

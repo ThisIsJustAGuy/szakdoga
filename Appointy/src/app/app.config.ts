@@ -7,7 +7,7 @@ import {provideOAuthClient} from "angular-oauth2-oidc";
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
 import {SocialAuthServiceConfig} from '@abacritt/angularx-social-login';
 import {GoogleLoginProvider} from '@abacritt/angularx-social-login';
-import data from "../../public/constants.json"; //emiatt nem lehet változó a path, ez csak fix literal lehet
+import data from "../../public/appointy.json"; //emiatt nem lehet változó a path, ez csak fix literal lehet
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), provideHttpClient(),
