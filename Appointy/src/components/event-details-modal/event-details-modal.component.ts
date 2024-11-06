@@ -6,6 +6,7 @@ import {EmailService} from "../../services/email.service";
 import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ConstantService} from "../../services/constant.service";
+import {isSameDay} from "date-fns";
 
 @Component({
   selector: 'Appointy-event-details-modal',
@@ -37,7 +38,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
     this.initForm();
   }
 
-  initForm(){
+  initForm() {
+
     this.eventForm = new FormGroup({
       summary: new FormControl('', [Validators.required]),
       description: new FormControl(''),
@@ -50,11 +52,60 @@ export class EventDetailsModalComponent implements AfterContentInit {
       that_day: new FormControl(false),
       hour_before: new FormControl(false),
     });
+    this.checkForTimeClashes();
 
     this.startMonth = (this.eventDetails.calendarEvent?.startDate?.getMonth()! + 1).toString();
     this.endMonth = (this.eventDetails.calendarEvent?.endDate?.getMonth()! + 1).toString();
 
     this.updateMaxAttendees(0);
+  }
+
+  checkForTimeClashes() {
+    //egész naposra nem kell checkelni, ott alapból nem kattinthat
+    let start: Date = new Date(this.eventDetails.calendarEvent!.startDate!);
+    const start_time = this.eventForm.value.start.split(':');
+    start.setHours(start_time[0]);
+    start.setMinutes(start_time[1]);
+
+    let end: Date = new Date(this.eventDetails.calendarEvent!.endDate!);
+    const end_time = this.eventForm.value.end.split(':');
+    end.setHours(end_time[0]);
+    end.setMinutes(end_time[1]);
+
+    for (const d_date of this.constService.DISALLOWED_DATES) {
+      if (Array.isArray(d_date)) {
+
+        const d_start: Date = new Date(d_date[0]);
+        const d_end: Date = new Date(d_date[1]);
+
+        if (start < d_end && start > d_start) { //start a disallowed-on belül
+          if (isSameDay(start, d_end)) {
+            start = new Date(d_end);
+          } else { //ha nem az end napján van, akkor fixen a startén
+            start = new Date(d_start);
+          }
+        }
+        if (end < d_end && end > d_start) { //end a disallowed-on belül
+          console.log("end belül");
+          end = new Date(start);
+        }
+        if (start < d_start && end > d_end) { // start és end közrefogja a disallowed intervallumot
+          end = new Date(d_start);
+        }
+
+      }
+    }
+
+    const start_time_text = start.getHours().toString().padStart(2, '0') + ':' + start.getMinutes().toString().padStart(2, '0');
+    this.eventForm.patchValue({start: start_time_text});
+    const end_time_text = end.getHours().toString().padStart(2, '0') + ':' + end.getMinutes().toString().padStart(2, '0');
+    this.eventForm.patchValue({end: end_time_text});
+
+
+    //TODO: formot változtatás közben ne engedjük disallowed-be tenni
+    //TODO: edit oldalon se
+
+
   }
 
   locationChanged(event: Event) {
@@ -105,5 +156,4 @@ export class EventDetailsModalComponent implements AfterContentInit {
   closeModal() {
     this.modalService.closeModal();
   }
-
 }

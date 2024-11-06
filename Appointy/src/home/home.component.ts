@@ -269,7 +269,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   configDisabledDates() {
     for (const date of this.dates) {
       for (const disallowedDate of this.constService.DISALLOWED_DATES) {
-        if (typeof disallowedDate === "string" && isSameDay(date, disallowedDate)) {
+        if (!Array.isArray(disallowedDate) && isSameDay(date, disallowedDate)) {
           //egész napos
           this.createDisabledOverlay(date);
         } else if (Array.isArray(disallowedDate) && isSameDay(date, disallowedDate[0]) && !isSameDay(date, disallowedDate[1])) {
