@@ -28,7 +28,7 @@ export class EmailService {
     const appDate = fromZonedTime(formValue.start?.dateTime, formValue.start?.timeZone);
     const appDateEnd = fromZonedTime(formValue.end?.dateTime, formValue.end?.timeZone);
 
-    const date: string = appDate.getFullYear() + "-" + (appDate.getMonth() + 1) + "-" + appDate.getDate();
+    const date: string = appDate.getFullYear() + "-" + (appDate.getMonth() + 1).toString().padStart(2, '0') + "-" + appDate.getDate().toString().padStart(2, '0');
     const start: string = appDate.getHours().toString().padStart(2, '0') + ":" + appDate.getMinutes().toString().padStart(2, '0');
     const end: string = appDateEnd.getHours().toString().padStart(2, '0') + ":" + appDateEnd.getMinutes().toString().padStart(2, '0');
 
