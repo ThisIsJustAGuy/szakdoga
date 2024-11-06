@@ -270,9 +270,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     for (const date of this.dates) {
       for (const disallowedDate of this.constService.DISALLOWED_DATES) {
         if (typeof disallowedDate === "string" && isSameDay(date, disallowedDate)) {
+          //egész napos
           this.createDisabledOverlay(date);
-          break; //ha ezen a napon kezdődik egy, és más nap ér véget az le kell még kezelni
+        } else if (Array.isArray(disallowedDate) && isSameDay(date, disallowedDate[0]) && !isSameDay(date, disallowedDate[1])) {
+          //kezdő- és végpont, több napos
+          this.createDisabledOverlay(date, disallowedDate, true);
         } else if (Array.isArray(disallowedDate) && isSameDay(date, disallowedDate[0])) {
+          //kezdő- és végpont, 1 napos
           this.createDisabledOverlay(date, disallowedDate);
         }
       }
@@ -280,29 +284,53 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   createDisabledOverlay(date: Date, disallowedDates?: string[], multipleDays: boolean = false) {
+
     const div: HTMLDivElement = this.renderer.createElement('div');
     this.renderer.addClass(div, 'disallowed_date');
 
     this.renderer.setStyle(div, 'width', '100%');
+    //1 egész napos; vagy több napos, de nem ma van sem az eleje, sem a vége
+    this.renderer.setStyle(div, 'height', '100%');
 
-    if (!disallowedDates) {
-      this.renderer.setStyle(div, 'height', '100%');
-    } else {
+    // if (!disallowedDates || (multipleDays && !isSameDay(date, disallowedDates[1]) && !isSameDay(date, disallowedDates[0]))) {
+
+    if (disallowedDates) {
+      //intervallum
       const cellHeight: number = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-cell-height'));
       const start: Date = new Date(disallowedDates[0]);
       const end: Date = new Date(disallowedDates[1]);
 
-      this.renderer.setStyle(div, 'top', start.getHours() * cellHeight + (start.getMinutes() / 60) * cellHeight + "rem");
       if (!multipleDays) {
+        //egy nap
+        this.renderer.setStyle(div, 'top', start.getHours() * cellHeight + (start.getMinutes() / 60) * cellHeight + "rem");
         this.renderer.setStyle(div, 'height', cellHeight * (end.getHours() - start.getHours()) + cellHeight * ((end.getMinutes() - start.getMinutes()) / 60) + "rem");
+
+      } else if (isSameDay(date, start)) {
+        //több nap, ma van az eleje
+        this.renderer.setStyle(div, 'top', start.getHours() * cellHeight + (start.getMinutes() / 60) * cellHeight + "rem");
+        this.renderer.setStyle(div, 'height', cellHeight * (24 - start.getHours()) + cellHeight * (start.getMinutes() / 60) + "rem");
+        this.nextOverlayIteration(date, disallowedDates);
+
+      } else if (isSameDay(date, end)) {
+        //több nap, ma van a vége
+        this.renderer.setStyle(div, 'top', '0');
+        this.renderer.setStyle(div, 'height', cellHeight * end.getHours() + cellHeight * (end.getMinutes() / 60) + "rem");
+
       } else {
-        //valamilyen rekurzióval meghívni ezt a függvényt megint
+        //több nap, nem ma van sem az eleje, sem a vége
+        this.nextOverlayIteration(date, disallowedDates);
       }
     }
 
     const parent: HTMLDivElement = this.elementRef.nativeElement.querySelector(`#calendarColumn${date.getDate()}`);
     this.renderer.appendChild(parent, div);
     this.disabledRefs.push([div, parent]);
+  }
+
+  nextOverlayIteration(date: Date, disallowedDates: string[]) {
+    const tomorrow: Date = new Date(date);
+    tomorrow.setDate(date.getDate() + 1);
+    this.createDisabledOverlay(tomorrow, disallowedDates, true);
   }
 
 
