@@ -271,19 +271,33 @@ export class HomeComponent implements OnInit, OnDestroy {
       for (const disallowedDate of this.constService.DISALLOWED_DATES) {
         if (typeof disallowedDate === "string" && isSameDay(date, disallowedDate)) {
           this.createDisabledOverlay(date);
-          break;
+          break; //ha ezen a napon kezdődik egy, és más nap ér véget az le kell még kezelni
+        } else if (Array.isArray(disallowedDate) && isSameDay(date, disallowedDate[0])) {
+          this.createDisabledOverlay(date, disallowedDate);
         }
       }
     }
   }
 
-  createDisabledOverlay(date: Date, disallowedDates?: Date[]) {
+  createDisabledOverlay(date: Date, disallowedDates?: string[], multipleDays: boolean = false) {
     const div: HTMLDivElement = this.renderer.createElement('div');
     this.renderer.addClass(div, 'disallowed_date');
 
+    this.renderer.setStyle(div, 'width', '100%');
+
     if (!disallowedDates) {
       this.renderer.setStyle(div, 'height', '100%');
-      this.renderer.setStyle(div, 'width', '100%');
+    } else {
+      const cellHeight: number = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-cell-height'));
+      const start: Date = new Date(disallowedDates[0]);
+      const end: Date = new Date(disallowedDates[1]);
+
+      this.renderer.setStyle(div, 'top', start.getHours() * cellHeight + (start.getMinutes() / 60) * cellHeight + "rem");
+      if (!multipleDays) {
+        this.renderer.setStyle(div, 'height', cellHeight * (end.getHours() - start.getHours()) + cellHeight * ((end.getMinutes() - start.getMinutes()) / 60) + "rem");
+      } else {
+        //valamilyen rekurzióval meghívni ezt a függvényt megint
+      }
     }
 
     const parent: HTMLDivElement = this.elementRef.nativeElement.querySelector(`#calendarColumn${date.getDate()}`);
