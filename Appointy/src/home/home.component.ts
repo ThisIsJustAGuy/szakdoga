@@ -308,7 +308,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       } else if (isSameDay(date, start)) {
         //több nap, ma van az eleje
         this.renderer.setStyle(div, 'top', start.getHours() * cellHeight + (start.getMinutes() / 60) * cellHeight + "rem");
-        this.renderer.setStyle(div, 'height', cellHeight * (24 - start.getHours()) + cellHeight * (start.getMinutes() / 60) + "rem");
+        this.renderer.setStyle(div, 'height', cellHeight * (24 - start.getHours()) - cellHeight * (start.getMinutes() / 60) + "rem");
         this.nextOverlayIteration(date, disallowedDates);
 
       } else if (isSameDay(date, end)) {
