@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
 import {ModalService} from "../../services/modal.service";
 import {CalendarEvent} from "../../classes/CalendarEvent";
 
@@ -9,14 +9,19 @@ import {CalendarEvent} from "../../classes/CalendarEvent";
   templateUrl: './calendar-column.component.html',
   styleUrl: './calendar-column.component.scss'
 })
-export class CalendarColumnComponent {
+export class CalendarColumnComponent implements OnChanges{
   @Input() date: Date = new Date();
+  @Output() loaded: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private modalService: ModalService) {
   }
 
+  ngOnChanges() {
+    this.loaded.emit(true);
+  }
+
   getID(hour: number): string {
-    return this.date.getDate() + "." + hour;
+    return this.date.getFullYear() + "." + this.date.getMonth() + "." + this.date.getDate() + "." + hour;
   }
 
   openNewEventModal(hour: number) {
@@ -25,7 +30,10 @@ export class CalendarColumnComponent {
     endDate.setHours(hour + 1);
 
     const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    let calEvent = new CalendarEvent("", {dateTime: this.date.toISOString(), timeZone: time_zone}, {dateTime: endDate.toISOString(), timeZone: time_zone})
+    let calEvent = new CalendarEvent("", {
+      dateTime: this.date.toISOString(),
+      timeZone: time_zone
+    }, {dateTime: endDate.toISOString(), timeZone: time_zone})
     this.modalService.openModal({inputsRequired: true, calendarEvent: calEvent})
   }
 }

@@ -71,6 +71,13 @@ html, body {
   position: absolute;
 }
 
+.disallowed_date {
+  position: absolute;
+  top:0;
+  left:0;
+  background-color: hsl(360 0% 90% / 0.75);
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 Appointy-home {max-height: 500px;}

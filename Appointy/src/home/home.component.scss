@@ -29,6 +29,8 @@
 
 .day_column{
   min-width: $column-width;
+  position: relative;
+  //width: 100%;
   flex-basis: 0;
   flex-grow: 1;
 }

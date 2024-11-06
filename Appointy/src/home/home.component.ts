@@ -1,17 +1,27 @@
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, OnDestroy, OnInit} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ComponentRef,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  Renderer2
+} from '@angular/core';
 import {CalendarColumnComponent} from "../components/calendar-column/calendar-column.component";
 import {HoursColumnComponent} from "../components/hours-column/hours-column.component";
 import {CalendarService} from "../services/calendar.service";
 import {WeekdayComponent} from "../components/weekday/weekday.component";
 import {EventComponent} from "../components/event/event.component";
 import {CalendarEvent} from "../classes/CalendarEvent";
-import {Subscription} from "rxjs";
+import {Subject, Subscription} from "rxjs";
 import {NowMarkerComponent} from "../components/now-marker/now-marker.component";
 import {EventDetailsModalComponent} from "../components/event-details-modal/event-details-modal.component";
 import {ModalService} from "../services/modal.service";
-import {NgIf} from "@angular/common";
+import {NgClass, NgIf} from "@angular/common";
 import {EventDetails} from "../classes/EventDetails";
 import {ConstantService} from "../services/constant.service";
+import {isSameDay} from "date-fns";
 
 @Component({
   selector: 'Appointy-home',
@@ -23,6 +33,7 @@ import {ConstantService} from "../services/constant.service";
     EventComponent,
     EventDetailsModalComponent,
     NgIf,
+    NgClass,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -35,17 +46,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   now: Date;
   middleDate: Date; // Ez alapján döntjük el milyen hónap van
 
-  currentDay: number = 0;
   startDate: number = 0;
-  prevMonthUsed: boolean = false;
 
   componentRefs: ComponentRef<EventComponent>[] = [];
   nowMarkerRef: ComponentRef<NowMarkerComponent> | null = null;
+  disabledRefs: HTMLDivElement[][] = [];
 
   eventDetailsVisible: boolean = false;
   eventDetails!: EventDetails;
 
+  constsLoaded: boolean = false;
+
   private subs: Subscription[] = [];
+  private calendarColumnLoaded: Subject<boolean> = new Subject<boolean>();
+  completedColumnLoads: number = 0;
 
   ngOnInit() {
     this.initEventDetailsModal();
@@ -56,7 +70,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     private appRef: ApplicationRef,
     private modalService: ModalService,
     private cdr: ChangeDetectorRef,
-    protected constService: ConstantService
+    protected constService: ConstantService,
+    private renderer: Renderer2,
+    private elementRef: ElementRef
   ) {
     this.currentDate = new Date();
     this.middleDate = new Date();
@@ -66,8 +82,22 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.fillWeekDays('hu-HU');
     this.fillDatesOfWeek();
 
-    this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => this.initCalendar()));
+    this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => {
+      this.initCalendar();
+      this.constsLoaded = true;
+      this.calendarColumnLoaded.next(true);
+    }));
     this.constService.setConstants();
+
+    this.calendarColumnLoaded.subscribe({
+      next: () => {
+        this.completedColumnLoads++;
+        if (this.completedColumnLoads === 8 || (this.completedColumnLoads === 7 && this.constsLoaded)) {
+          this.allColumnsLoaded();
+          this.completedColumnLoads = 0;
+        }
+      }
+    });
   }
 
   initEventDetailsModal() {
@@ -102,7 +132,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < calendarEvents.length; i++) {
       // helyes id-val rendelkező kocka megtalálása
-      startElement = document.getElementById(calendarEvents[i].startDate.getDate() + "." + calendarEvents[i].startDate.getHours());
+      startElement = document.getElementById(calendarEvents[i].startDate.getFullYear() + "." + calendarEvents[i].startDate.getMonth() + "." + calendarEvents[i].startDate.getDate() + "." + calendarEvents[i].startDate.getHours());
 
       if (startElement) {
         // calendarEvents[i] = new CalendarEvent(events[i].summary, events[i].start, events[i].end, events[i].description, events[i].location);
@@ -138,6 +168,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  destroyDisabled() {
+    if (this.disabledRefs.length > 0) {
+      for (let refs of this.disabledRefs) {
+        this.renderer.removeChild(refs[1], refs[0]);
+      }
+      this.disabledRefs = [];
+    }
+  }
+
   fillWeekDays(locale: string) {
     let baseDate: Date = new Date(Date.UTC(2017, 0, 2)); //csak egy hétfői nap
     for (let i: number = 0; i < 7; i++) {
@@ -163,6 +202,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.fillDatesOfWeek();
     this.destroyEvents();
+    this.destroyDisabled();
 
     this.subs.push(this.calendarService.getCalendarEvents(this.currentDate)
       .subscribe((res) => {
@@ -170,20 +210,21 @@ export class HomeComponent implements OnInit, OnDestroy {
           res[0].items = [...res[0].items, ...res[i].items];
         }
         this.displayEvents(res[0].items);
-      }))
+      }));
   }
 
   fillDatesOfWeek() {
     this.dates = [];
-    this.prevMonthUsed = false;
+    let prevMonthUsed: boolean = false;
+    let nextMonthUsed: boolean = false;
 
     const currentDateDay: number = this.currentDate.getDate();
-    this.currentDay = this.currentDate.getDay();
-    this.startDate = currentDateDay - (this.currentDay != 0 ? this.currentDay : 7) + 1;
+    const currentDay = this.currentDate.getDay();
+    this.startDate = currentDateDay - (currentDay != 0 ? currentDay : 7) + 1;
 
     const lastDayOfLastMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 0).getDate();
     if (this.startDate < 1) { // hét eleje még az előző hónap
-      this.prevMonthUsed = true;
+      prevMonthUsed = true;
       this.startDate = lastDayOfLastMonth + this.startDate;
     }
 
@@ -192,31 +233,71 @@ export class HomeComponent implements OnInit, OnDestroy {
 
 
     for (let i = 0; i < this.weekdays.length; i++) {
-      if (this.prevMonthUsed && lastDayOfLastMonth < date + 1) { // átlépünk az előző hónap végéről elsejére
+      if (prevMonthUsed && lastDayOfLastMonth < date + 1) { // átlépünk az előző hónap végéről elsejére
         date = 1;
       } else if (lastDayOfThisMonth < date + 1) { // átlépünk az akt. hónap végéről a köv. hónap elsejére
+        nextMonthUsed = true;
         date = 1;
       } else {
         date++;
       }
 
-      let copiedDate: Date = new Date(this.middleDate);
+      let copiedDate: Date = new Date(this.currentDate);
       copiedDate.setDate(date);
-      if (date < 4) { //middleDate után
+
+      if (date < 23 && nextMonthUsed) { //kövi hónapba lépünk
         copiedDate.setMonth(copiedDate.getMonth() + 1);
+        this.dates.push(copiedDate);
+      } else if (date > 6 && prevMonthUsed) {
+        copiedDate.setMonth(copiedDate.getMonth() - 1);
         this.dates.push(copiedDate);
       } else {
         this.dates.push(copiedDate);
       }
     }
+
   }
+
+  handleColumnLoad(value: boolean, _index: number) {
+    this.calendarColumnLoaded.next(value);
+  }
+
+  allColumnsLoaded() {
+    this.configDisabledDates();
+  }
+
+  configDisabledDates() {
+    for (const date of this.dates) {
+      for (const disallowedDate of this.constService.DISALLOWED_DATES) {
+        if (typeof disallowedDate === "string" && isSameDay(date, disallowedDate)) {
+          this.createDisabledOverlay(date);
+          break;
+        }
+      }
+    }
+  }
+
+  createDisabledOverlay(date: Date, disallowedDates?: Date[]) {
+    const div: HTMLDivElement = this.renderer.createElement('div');
+    this.renderer.addClass(div, 'disallowed_date');
+
+    if (!disallowedDates) {
+      this.renderer.setStyle(div, 'height', '100%');
+      this.renderer.setStyle(div, 'width', '100%');
+    }
+
+    const parent: HTMLDivElement = this.elementRef.nativeElement.querySelector(`#calendarColumn${date.getDate()}`);
+    this.renderer.appendChild(parent, div);
+    this.disabledRefs.push([div, parent]);
+  }
+
 
   setNowMarker() {
     if (this.nowMarkerRef) {
       this.nowMarkerRef?.destroy();
     }
 
-    const startElement: HTMLElement | null = document.getElementById(this.now.getDate() + "." + this.now.getHours());
+    const startElement: HTMLElement | null = document.getElementById(this.now.getFullYear() + "." + this.now.getMonth() + "." + this.now.getDate() + "." + this.now.getHours());
 
     if (startElement) {
       const nowContainer = document.createElement('div');
@@ -241,7 +322,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     for (const sub of this.subs) {
       sub.unsubscribe();
     }
