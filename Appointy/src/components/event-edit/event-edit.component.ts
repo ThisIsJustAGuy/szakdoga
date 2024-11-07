@@ -7,7 +7,9 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {ConstantService} from "../../services/constant.service";
 import {Subscription} from "rxjs";
 import {StyleService} from "../../services/style.service";
-import {disallowedTimeValidator, startBeforeEndValidator} from "../../validators/validators";
+import {disallowedTimeValidator, overlapValidator, startBeforeEndValidator} from "../../validators/validators";
+import {CalendarEvent} from "../../classes/CalendarEvent";
+import {CalendarService} from "../../services/calendar.service";
 
 @Component({
   selector: 'Appointy-event-edit',
@@ -44,6 +46,8 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
 
   eventForm: FormGroup;
 
+  events: CalendarEvent[] = [];
+
   private subs: (Subscription | undefined)[] = [];
 
   constructor(
@@ -52,21 +56,29 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     protected constService: ConstantService,
-    private styleService: StyleService
+    private styleService: StyleService,
+    private calendarService: CalendarService
   ) {
     this.styleService.loadStyles();
     this.eventForm = new FormGroup({});
   }
 
   ngAfterContentInit(): void {
-    this.subs.push(this.constService.setupFinished.subscribe(()=>  this.initForm()));
+    this.subs.push(this.constService.setupFinished.subscribe(()=> {
+      this.eventForm.addValidators(disallowedTimeValidator(this.constService.DISALLOWED_DATES));
+
+      this.fetchDailyEvents();
+      this.subs.push(this.eventForm.get('date')?.valueChanges.subscribe((newValue: string)=> {
+        this.fetchDailyEvents(new Date(newValue));
+      }));
+    }));
     this.constService.setConstants();
     this.initForm();
   }
 
   initForm() {
     this.subs.push(this.route.queryParams.subscribe(params => {
-      this.appointment_date = params['appointment_date'];
+      this.appointment_date = params['appointment_date']; //itt le kellene kerni
       this.start_time = params['start_time'];
       this.end_time = params['end_time'];
       this.summary = params['summary'];
@@ -90,13 +102,31 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
         start: new FormControl(this.start_time, [Validators.required]),
         end: new FormControl(this.end_time, [Validators.required]),
         location: new FormControl(this.location, [Validators.required]),
-      }, { validators:
+      }, {
+        validators:
           [
-            startBeforeEndValidator(),
-            disallowedTimeValidator(this.constService.DISALLOWED_DATES),
-            // overlapValidator(this.constService.ALLOW_OVERLAPS, this.constService.LOCATIONS, this.events)
+            startBeforeEndValidator()
           ]
       });
+    }));
+  }
+
+  attachOverlapValidator() {
+    this.eventForm.addValidators(overlapValidator(this.constService.ALLOW_OVERLAPS, this.constService.LOCATIONS, this.events));
+    this.eventForm.updateValueAndValidity();
+  }
+
+  fetchDailyEvents(reqDate: Date = new Date(this.appointment_date!)) {
+    this.events = [];
+    this.subs.push(this.calendarService.getCalendarEventsThisDay(reqDate)
+      .subscribe((res) => {
+      for (let i = 1; i < res.length; i++) {
+        res[0].items = [...res[0].items, ...res[i].items];
+      }
+      for (const r of res[0].items) {
+        this.events.push(new CalendarEvent(r.summary, r.start, r.end, r.description, r.location));
+      }
+      this.attachOverlapValidator();
     }));
   }
 

@@ -27,14 +27,13 @@ export function disallowedTimeValidator(disallowedDates: (string | string[])[], 
 
         const d_start: Date = new Date(d_date[0]);
         const d_end: Date = new Date(d_date[1]);
-
         if (start < d_end && start > d_start) { //start a disallowed-on belül
           return {startInDisallowed: true};
         }
         if (end < d_end && end > d_start) { //end a disallowed-on belül
           return {endInDisallowed: true};
         }
-        if (start < d_start && end > d_end) { // start és end közrefogja a disallowed intervallumot
+        if (start <= d_start && end >= d_end) { // start és end közrefogja a disallowed intervallumot
           return {timesEnvelopDisallowed: true};
         }
 
@@ -60,35 +59,51 @@ export function overlapValidator(overlaps: boolean | boolean[], locations: strin
       for (let i = 0; i < overlaps.length; i++) {//overlaps és locations ugyan olyan hosszú kell legyen
         if (!overlaps[i] && control.get('location')?.value == locations[i]) {
           //itt nem engedjük az overlapet
+
           for (const event of events) {
-            console.log(event.startDate);
-            // if (start < event.startDate && start > d_start) { //start a disallowed-on belül
-            //   return {startInDisallowed: true};
-            // }
-            // if (end < d_end && end > d_start) { //end a disallowed-on belül
-            //   return {endInDisallowed: true};
-            // }
-            // if (start < d_start && end > d_end) { // start és end közrefogja a disallowed intervallumot
-            //   return {timesEnvelopDisallowed: true};
-            // }
+            if (event.location == locations[i]) { //locationok egyeznek
+
+              if (start < event.endDate && start > event.startDate) { //start overlap-el
+                return {startInOverlap: true};
+              }
+              if (end < event.endDate && end > event.startDate) { //end overlap-el
+                return {endInOverlap: true};
+              }
+              if (start <= event.startDate && end >= event.endDate) { // start és end közrefog egy másik eventet
+                return {timesEnvelopOverlap: true};
+              }
+            }
           }
         }
       }
     } else {
+      for (const event of events) {
+        //semmivel nem engedjük az overlapet
 
+        if (start < event.endDate && start > event.startDate) {
+          return {startInOverlap: true};
+        }
+        if (end < event.endDate && end > event.startDate) {
+          return {endInOverlap: true};
+        }
+        if (start <= event.startDate && end >= event.endDate) {
+          return {timesEnvelopOverlap: true};
+        }
+      }
     }
     return null;
   };
 }
 
-function getDateValue(date: Date | undefined, timeValue: AbstractControl | null, dateValue: AbstractControl | null): Date{
-  let start: Date;
+function getDateValue(date: Date | undefined, timeValue: AbstractControl | null, dateValue: AbstractControl | null): Date {
+  let time: Date;
   const start_time = timeValue?.value.split(':');
   if (date)
-    start = new Date(date);
+    time = new Date(date);
   else
-    start = new Date(dateValue?.value);
-  start.setHours(+start_time[0]);
-  start.setMinutes(+start_time[1]);
-  return start;
+    time = new Date(dateValue?.value);
+  time.setHours(+start_time[0]);
+  time.setMinutes(+start_time[1]);
+  time.setSeconds(0, 0);
+  return time;
 }

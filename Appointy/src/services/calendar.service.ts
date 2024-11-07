@@ -19,8 +19,13 @@ export class CalendarService {
 
   getCalendarEvents(date: Date = new Date()): Observable<any[]> {
     const startOfWeek = this.getStartOfWeek(date);
+    startOfWeek.setHours(0, 0, 0, 0);
+    const offset = startOfWeek.getTimezoneOffset(); //percben adja vissza
+    startOfWeek.setMinutes(startOfWeek.getMinutes() - offset);
 
     const endOfWeek = this.getEndOfWeek(date);
+    endOfWeek.setHours(23, 59, 59, 999);
+    endOfWeek.setMinutes(endOfWeek.getMinutes() - offset);
 
     const startDateTime = startOfWeek.toISOString();
     const endDateTime = endOfWeek.toISOString();
@@ -63,6 +68,31 @@ export class CalendarService {
       'resource': event,
       'sendNotifications': true
     }).execute((e: any) => console.log(e));
+  }
+
+  getCalendarEventsThisDay(date: Date = new Date()): Observable<any[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const offset = startOfDay.getTimezoneOffset();
+    startOfDay.setMinutes(startOfDay.getMinutes() - offset);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    endOfDay.setMinutes(endOfDay.getMinutes() - offset);
+
+    const startDateTime = startOfDay.toISOString();
+    const endDateTime = endOfDay.toISOString();
+
+    const requests: Observable<any>[] = [];
+
+    for (let i = 0; i < this.constService.CALENDAR_IDS.length; i++) {
+      const url = `https://www.googleapis.com/calendar/v3/calendars/${this.constService.CALENDAR_IDS[i]}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.constService.API_KEY}`;
+      requests.push(this.http.get(url));
+    }
+
+    return forkJoin(requests).pipe(
+      map(res => res.flat())
+    );
   }
 
 }

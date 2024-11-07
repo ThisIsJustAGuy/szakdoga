@@ -3,9 +3,14 @@
 .formContainer{
   height: 100%;
   margin: 5px;
+  width: 450px;
 }
 
 .btn-ok{
   background-color: var(--primary-color);
   color: var(--secondary-text-color);
+}
+
+form {
+  width: 100%;
 }

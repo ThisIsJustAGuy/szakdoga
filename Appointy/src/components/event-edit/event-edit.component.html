@@ -59,7 +59,16 @@
           <small class="text-danger">End time must not be in a disallowed timeframe.</small>
         }
         @if (eventForm.hasError('timesEnvelopDisallowed')) {
-          <small class="text-danger">Start and End time must not envelop a disallowed timeframe.</small>
+          <small class="text-danger">Start and End times must not envelop a disallowed timeframe.</small>
+        }
+        @if (eventForm.hasError('startInOverlap')) {
+          <small class="text-danger">Start time must not be overlapping with an other event.</small>
+        }
+        @if (eventForm.hasError('endInOverlap')) {
+          <small class="text-danger">End time must not be overlapping with an other event.</small>
+        }
+        @if (eventForm.hasError('timesEnvelopOverlap')) {
+          <small class="text-danger">Start and End times must not envelop an other event.</small>
         }
 
         <div class="d-flex flex-column">
