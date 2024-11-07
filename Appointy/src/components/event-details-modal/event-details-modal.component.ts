@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, Input} from '@angular/core';
+import {AfterContentInit, Component, Input, OnDestroy} from '@angular/core';
 import {ModalService} from "../../services/modal.service";
 import {EventDetails} from "../../classes/EventDetails";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -7,6 +7,7 @@ import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ConstantService} from "../../services/constant.service";
 import {isSameDay} from "date-fns";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'Appointy-event-details-modal',
@@ -15,7 +16,7 @@ import {isSameDay} from "date-fns";
   templateUrl: './event-details-modal.component.html',
   styleUrl: './event-details-modal.component.scss'
 })
-export class EventDetailsModalComponent implements AfterContentInit {
+export class EventDetailsModalComponent implements AfterContentInit, OnDestroy {
 
   @Input() eventDetails!: EventDetails;
 
@@ -24,6 +25,8 @@ export class EventDetailsModalComponent implements AfterContentInit {
   endMonth: string = '';
 
   max_attendees: number = 0;
+
+  private subs: (Subscription | undefined)[] = [];
 
   constructor(
     private modalService: ModalService,
@@ -58,17 +61,19 @@ export class EventDetailsModalComponent implements AfterContentInit {
     this.endMonth = (this.eventDetails.calendarEvent?.endDate?.getMonth()! + 1).toString();
 
     this.updateMaxAttendees(0);
+
+    this.subscribeToTimeChanges();
   }
 
-  checkForTimeClashes() {
+  checkForTimeClashes(newValue?: string, isStart?: boolean) {
     //egész naposra nem kell checkelni, ott alapból nem kattinthat
     let start: Date = new Date(this.eventDetails.calendarEvent!.startDate!);
-    const start_time = this.eventForm.value.start.split(':');
+    const start_time = isStart ? newValue!.split(':') : this.eventForm.value.start.split(':');
     start.setHours(start_time[0]);
     start.setMinutes(start_time[1]);
 
     let end: Date = new Date(this.eventDetails.calendarEvent!.endDate!);
-    const end_time = this.eventForm.value.end.split(':');
+    const end_time = isStart === false ? newValue!.split(':') : this.eventForm.value.end.split(':');
     end.setHours(end_time[0]);
     end.setMinutes(end_time[1]);
 
@@ -81,12 +86,14 @@ export class EventDetailsModalComponent implements AfterContentInit {
         if (start < d_end && start > d_start) { //start a disallowed-on belül
           if (isSameDay(start, d_end)) {
             start = new Date(d_end);
+            if (start > end){
+              end = new Date(start);
+            }
           } else { //ha nem az end napján van, akkor fixen a startén
             start = new Date(d_start);
           }
         }
         if (end < d_end && end > d_start) { //end a disallowed-on belül
-          console.log("end belül");
           end = new Date(start);
         }
         if (start < d_start && end > d_end) { // start és end közrefogja a disallowed intervallumot
@@ -96,16 +103,34 @@ export class EventDetailsModalComponent implements AfterContentInit {
       }
     }
 
+    this.unsubscribeFromTimeChanges();
+
     const start_time_text = start.getHours().toString().padStart(2, '0') + ':' + start.getMinutes().toString().padStart(2, '0');
     this.eventForm.patchValue({start: start_time_text});
     const end_time_text = end.getHours().toString().padStart(2, '0') + ':' + end.getMinutes().toString().padStart(2, '0');
     this.eventForm.patchValue({end: end_time_text});
 
-
-    //TODO: formot változtatás közben ne engedjük disallowed-be tenni
+    this.subscribeToTimeChanges();
     //TODO: edit oldalon se
 
 
+  }
+
+  subscribeToTimeChanges() {
+    this.subs.push(this.eventForm.get('start')?.valueChanges.subscribe((newValue: string) => {
+      this.checkForTimeClashes(newValue, true);
+    }));
+    this.subs.push(this.eventForm.get('end')?.valueChanges.subscribe((newValue: string) => {
+      this.checkForTimeClashes(newValue, false);
+    }));
+  }
+
+  unsubscribeFromTimeChanges() {
+    for (const sub of this.subs) {
+      if (sub instanceof Subscription) {
+        sub.unsubscribe();
+      }
+    }
   }
 
   locationChanged(event: Event) {
@@ -155,5 +180,13 @@ export class EventDetailsModalComponent implements AfterContentInit {
 
   closeModal() {
     this.modalService.closeModal();
+  }
+
+  ngOnDestroy() {
+    for (const sub of this.subs) {
+      if (sub instanceof Subscription) {
+        sub.unsubscribe();
+      }
+    }
   }
 }
