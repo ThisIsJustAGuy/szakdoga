@@ -128,6 +128,11 @@ export class ConstantService implements OnDestroy {
     return this._DISALLOWED_DATES
   }
 
+  private _ALLOW_OVERLAPS: boolean | boolean[] = true;
+  get ALLOW_OVERLAPS(): boolean | boolean[] {
+    return this._ALLOW_OVERLAPS;
+  }
+
   private _PATH = "appointy.json";
 
   public setupFinished: Subject<boolean> = new Subject<boolean>();
@@ -161,6 +166,7 @@ export class ConstantService implements OnDestroy {
       this._LOCATIONS = data.locations ?? [];
       this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
       this._DISALLOWED_DATES = data.disallowedDates ?? []; //a tömb elemei: ha string egész nap, ha tömb intervallum
+      this._ALLOW_OVERLAPS = data.allowOverlaps ?? true; // ha egy szám akkor global, ha tömb, akkor az adott indexű locationra vonatkozik
 
       this.setupFinished.next(true);
     }));

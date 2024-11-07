@@ -7,6 +7,9 @@
           <label for="summary">Summary *</label>
           <input type="text" name="summary" id="summary" formControlName="summary" class="form-control"
                  placeholder="Title">
+          @if (eventForm.get('summary')?.hasError('required')) {
+            <small class="text-danger">Summary is required.</small>
+          }
         </div>
       } @else {
         <h3 class="md-title">{{ eventDetails.calendarEvent?.summary ?? "No summary" }}</h3>
@@ -34,16 +37,41 @@
               <input type="time" name="end" id="end" formControlName="end" class="form-control">
             </div>
           </div>
-          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
+
+          @if (eventForm.get('start')?.hasError('required')) {
+            <small class="text-danger">Start is required.</small>
+          }
+          @if (eventForm.get('end')?.hasError('required')) {
+            <small class="text-danger">End is required.</small>
+          }
+          @if (eventForm.hasError('startBeforeEnd')) {
+            <small class="text-danger">Start time must be before end time.</small>
+          }
+          @if (eventForm.hasError('startInDisallowed')) {
+            <small class="text-danger">Start time must not be in a disallowed timeframe.</small>
+          }
+          @if (eventForm.hasError('endInDisallowed')) {
+            <small class="text-danger">End time must not be in a disallowed timeframe.</small>
+          }
+          @if (eventForm.hasError('timesEnvelopDisallowed')) {
+            <small class="text-danger">Start and End time must not envelop a disallowed timeframe.</small>
+          }
+
+          <small class="date_details">{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}
+            .{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate() }}.</small>
 
           <div class="d-flex flex-column">
-            <label for="location">Location</label>
-            <select name="location" id="location" formControlName="location" class="form-select" (change)="locationChanged($event)">
-              <option value="No location">No location</option>
+            <label for="location">Location *</label>
+            <select name="location" id="location" formControlName="location" class="form-select"
+                    (change)="locationChanged($event)">
+              <option value="" disabled>No location</option>
               @for (option of constService.LOCATIONS; track $index) {
                 <option [value]="option">{{ option }}</option>
               }
             </select>
+            @if (eventForm.get('location')?.hasError('required')) {
+              <small class="text-danger">Location is required.</small>
+            }
           </div>
 
 
@@ -51,30 +79,15 @@
             <label for="email">Your E-mail *</label>
             <input type="email" name="email" id="email" formControlName="email" class="form-control"
                    placeholder="your-email@example.com">
+            @if (eventForm.get('email')?.hasError('required')) {
+              <small class="text-danger">E-mail is required.</small>
+            }
           </div>
 
           <div class="d-flex flex-column">
-            <label for="attendees">Other attendees' E-mails (comma separated, max {{max_attendees}} addresses)</label>
+            <label for="attendees">Other attendees' E-mails (comma separated, max {{ max_attendees }} addresses)</label>
             <input type="email" name="attendees" id="attendees" formControlName="attendees" class="form-control"
                    placeholder="attendee@example.com,other@example.com" multiple>
-          </div>
-
-          <div class="d-flex flex-column">
-            <label>I want notifications:</label>
-            <div>
-              <input type="checkbox" class="form-check-input" id="day_before" name="day_before"
-                     formControlName="day_before">
-              <label class="form-check-label" for="day_before">On the day before the appointment</label>
-            </div>
-            <div>
-              <input type="checkbox" class="form-check-input" id="that_day" name="that_day" formControlName="that_day">
-              <label class="form-check-label" for="that_day">On the day of the appointment</label>
-            </div>
-            <div>
-              <input type="checkbox" class="form-check-input" id="hour_before" name="hour_before"
-                     formControlName="hour_before">
-              <label class="form-check-label" for="hour_before">An hour before the appointment</label>
-            </div>
           </div>
 
         </div>
@@ -87,8 +100,12 @@
           <p>Location: {{ eventDetails.calendarEvent?.location }}</p>
         }
 
-        <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
-        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}:{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }} - {{ eventDetails.calendarEvent?.endDate?.getHours() }}:{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
+        <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}
+          .{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
+        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}
+          :{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }}
+          - {{ eventDetails.calendarEvent?.endDate?.getHours() }}
+          :{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
       }
     </div>
     <div class="md-footer">

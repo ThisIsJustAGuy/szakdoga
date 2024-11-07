@@ -6,8 +6,8 @@ import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ConstantService} from "../../services/constant.service";
 import {Subscription} from "rxjs";
-import {isSameDay} from "date-fns";
 import {StyleService} from "../../services/style.service";
+import {disallowedTimeValidator, startBeforeEndValidator} from "../../validators/validators";
 
 @Component({
   selector: 'Appointy-event-edit',
@@ -46,8 +46,6 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
 
   private subs: (Subscription | undefined)[] = [];
 
-  controlsUpdating: boolean = false;
-
   constructor(
     private route: ActivatedRoute,
     private emailService: EmailService,
@@ -61,7 +59,7 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
   }
 
   ngAfterContentInit(): void {
-    this.subs.push(this.constService.setupFinished.subscribe());
+    this.subs.push(this.constService.setupFinished.subscribe(()=>  this.initForm()));
     this.constService.setConstants();
     this.initForm();
   }
@@ -85,81 +83,21 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
       this.accept_route = params['accept_route'];
       this.delete_route = params['delete_route'];
 
-
       this.eventForm = new FormGroup({
-        summary: new FormControl(this.summary),
+        summary: new FormControl(this.summary, [Validators.required]),
         description: new FormControl(this.description),
         date: new FormControl(this.appointment_date, [Validators.required]),
         start: new FormControl(this.start_time, [Validators.required]),
         end: new FormControl(this.end_time, [Validators.required]),
-        location: new FormControl(this.location),
+        location: new FormControl(this.location, [Validators.required]),
+      }, { validators:
+          [
+            startBeforeEndValidator(),
+            disallowedTimeValidator(this.constService.DISALLOWED_DATES),
+            // overlapValidator(this.constService.ALLOW_OVERLAPS, this.constService.LOCATIONS, this.events)
+          ]
       });
     }));
-
-    this.subscribeToTimeChanges();
-  }
-
-  subscribeToTimeChanges() {
-    this.subs.push(this.eventForm.get('start')?.valueChanges.subscribe((newValue: string) => {
-      if (!this.controlsUpdating)
-        this.checkForTimeClashes(newValue, true);
-    }));
-    this.subs.push(this.eventForm.get('end')?.valueChanges.subscribe((newValue: string) => {
-      if (!this.controlsUpdating)
-        this.checkForTimeClashes(newValue, false);
-    }));
-  }
-
-  checkForTimeClashes(newValue?: string, isStart?: boolean) {
-    //egész naposra nem kell checkelni, ott alapból nem kattinthat
-    let start: Date = new Date(this.appointment_date!);
-    const start_time = isStart ? newValue!.split(':') : this.eventForm.value.start.split(':');
-    start.setHours(start_time[0]);
-    start.setMinutes(start_time[1]);
-
-    let end: Date = new Date(this.appointment_date!);
-    const end_time = isStart === false ? newValue!.split(':') : this.eventForm.value.end.split(':');
-    end.setHours(end_time[0]);
-    end.setMinutes(end_time[1]);
-
-    for (const d_date of this.constService.DISALLOWED_DATES) {
-      if (Array.isArray(d_date)) {
-
-        const d_start: Date = new Date(d_date[0]);
-        const d_end: Date = new Date(d_date[1]);
-
-        if (start < d_end && start > d_start) { //start a disallowed-on belül
-          if (isSameDay(start, d_end)) {
-            start = new Date(d_end);
-            if (start > end) {
-              end = new Date(start);
-            }
-          } else { //ha nem az end napján van, akkor fixen a startén
-            start = new Date(d_start);
-            if (start > end) {
-              end = new Date(start);
-            }
-          }
-        }
-        if (end < d_end && end > d_start) { //end a disallowed-on belül
-          end = new Date(start);
-        }
-        if (start < d_start && end > d_end) { // start és end közrefogja a disallowed intervallumot
-          end = new Date(d_start);
-        }
-
-      }
-    }
-
-    this.controlsUpdating = true;
-
-    const start_time_text = start.getHours().toString().padStart(2, '0') + ':' + start.getMinutes().toString().padStart(2, '0');
-    this.eventForm.patchValue({start: start_time_text});
-    const end_time_text = end.getHours().toString().padStart(2, '0') + ':' + end.getMinutes().toString().padStart(2, '0');
-    this.eventForm.patchValue({end: end_time_text});
-
-    this.controlsUpdating = false;
-
   }
 
   saveChanges() {

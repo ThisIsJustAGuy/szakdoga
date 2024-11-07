@@ -1,6 +1,6 @@
 <div class="d-flex flex-column fullscreen">
 
-  <Appointy-event-details-modal *ngIf="eventDetailsVisible" [eventDetails]="eventDetails"/>
+  <Appointy-event-details-modal *ngIf="eventDetailsVisible" [eventDetails]="eventDetails" [events]="calendarEvents"/>
 
   <div class="d-flex flex-row justify-content-center align-items-center">
     <button class="me-4 btn btn-secondary btn-sm btn-rounded" (click)="prevWeek()"><i class="fa-solid fa-arrow-left"></i></button>

@@ -94,7 +94,6 @@ export class EmailService {
     if (finishState == "deleted") {
 
       //törölve lett
-      console.log("törlés");
 
       request_data.mail_subject = deleted_request_data.mail_subject;
       request_data.mail_title = deleted_request_data.mail_title;
@@ -110,8 +109,6 @@ export class EmailService {
       //ha a from_email nem a company akkor az editesre kell vinni, a cég is fogadja el
       if (from_email != this.constService.COMPANY_EMAIL) {
 
-        console.log("elfogadva, de editre küldjük a company emailre");
-
         request_data.mail_subject = accepted_request_data.mail_subject;
         request_data.mail_title = accepted_request_data.mail_title;
         request_data.mail_text = accepted_request_data.mail_text;
@@ -123,8 +120,6 @@ export class EmailService {
         template_id = this.constService.IN_PROGRESS_TEMPLATE_ID;
 
       } else {
-
-        console.log("elfogadva");
 
         request_data.mail_subject = accepted_request_data.mail_subject;
         request_data.mail_title = accepted_request_data.mail_title;
@@ -139,7 +134,6 @@ export class EmailService {
     } else {
 
       //vagy új request, vagy szerkesztett
-      console.log("új / szerkesztett");
 
       request_data.mail_subject = (to_email ? edited_request_data.mail_subject : new_request_data.mail_subject);
       request_data.mail_title = (to_email ? edited_request_data.mail_title : new_request_data.mail_title);

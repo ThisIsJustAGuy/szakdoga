@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {ModalService} from "../../services/modal.service";
 import {CalendarEvent} from "../../classes/CalendarEvent";
 
@@ -11,13 +11,16 @@ import {CalendarEvent} from "../../classes/CalendarEvent";
 })
 export class CalendarColumnComponent implements OnChanges{
   @Input() date: Date = new Date();
+  @Input() events: CalendarEvent[] = [];
   @Output() loaded: EventEmitter<boolean> = new EventEmitter<boolean>();
+
 
   constructor(private modalService: ModalService) {
   }
 
-  ngOnChanges() {
-    this.loaded.emit(true);
+  ngOnChanges(changes:SimpleChanges) {
+    if (changes['date']) // alapból 2x fut a 2 input miatt
+      this.loaded.emit(true);
   }
 
   getID(hour: number): string {
@@ -34,6 +37,6 @@ export class CalendarColumnComponent implements OnChanges{
       dateTime: this.date.toISOString(),
       timeZone: time_zone
     }, {dateTime: endDate.toISOString(), timeZone: time_zone})
-    this.modalService.openModal({inputsRequired: true, calendarEvent: calEvent})
+    this.modalService.openModal({inputsRequired: true, calendarEvent: calEvent});
   }
 }

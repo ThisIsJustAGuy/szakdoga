@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   startDate: number = 0;
 
-  componentRefs: ComponentRef<EventComponent>[] = [];
+  eventRefs: ComponentRef<EventComponent>[] = [];
   nowMarkerRef: ComponentRef<NowMarkerComponent> | null = null;
   disabledRefs: HTMLDivElement[][] = [];
 
@@ -57,6 +57,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   eventDetails!: EventDetails;
 
   constsLoaded: boolean = false;
+
+  calendarEvents: CalendarEvent[] = [];
 
   private subs: Subscription[] = [];
   private calendarColumnLoaded: Subject<boolean> = new Subject<boolean>();
@@ -126,33 +128,32 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   displayEvents(results: CalendarEvent[]) {
+    this.calendarEvents = [];
     // Számított mezők létrejöjjenek
-    const calendarEvents: CalendarEvent[] = []
     for (const res of results) {
-      calendarEvents.push(new CalendarEvent(res.summary, res.start, res.end, res.description, res.location));
+      this.calendarEvents.push(new CalendarEvent(res.summary, res.start, res.end, res.description, res.location));
     }
 
     let startElement: HTMLElement | null;
 
-    for (let i = 0; i < calendarEvents.length; i++) {
+    for (let i = 0; i < this.calendarEvents.length; i++) {
       // helyes id-val rendelkező kocka megtalálása
-      startElement = document.getElementById(calendarEvents[i].startDate.getFullYear() + "." + calendarEvents[i].startDate.getMonth() + "." + calendarEvents[i].startDate.getDate() + "." + calendarEvents[i].startDate.getHours());
+      startElement = document.getElementById(this.calendarEvents[i].startDate.getFullYear() + "." + this.calendarEvents[i].startDate.getMonth() + "." + this.calendarEvents[i].startDate.getDate() + "." + this.calendarEvents[i].startDate.getHours());
 
       if (startElement) {
-        // calendarEvents[i] = new CalendarEvent(events[i].summary, events[i].start, events[i].end, events[i].description, events[i].location);
         // ne írják egymást felül, ha egy kockába kell többet tenni
         const eventContainer = document.createElement('div');
         eventContainer.classList.add("event_container");
         startElement.appendChild(eventContainer);
 
         // berakjuk a helyére
-        this.componentRefs[i] = this.appRef.bootstrap(EventComponent, eventContainer);
+        this.eventRefs[i] = this.appRef.bootstrap(EventComponent, eventContainer);
         // utólag inputot kap
-        this.componentRefs[i].instance.calendarEvent = calendarEvents[i];
-        this.componentRefs[i].instance.id = `card${i}`;
+        this.eventRefs[i].instance.calendarEvent = this.calendarEvents[i];
+        this.eventRefs[i].instance.id = `card${i}`;
 
         // Angular vegye észre az új adatokat
-        this.componentRefs[i].instance.updateVariables();
+        this.eventRefs[i].instance.updateVariables();
       }
     }
 
@@ -161,8 +162,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   destroyEvents() {
-    if (this.componentRefs) {
-      for (const ref of this.componentRefs) {
+    if (this.eventRefs) {
+      for (const ref of this.eventRefs) {
         this.appRef.detachView(ref.hostView);
         ref.destroy();
       }
@@ -295,8 +296,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.renderer.setStyle(div, 'width', '100%');
     //1 egész napos; vagy több napos, de nem ma van sem az eleje, sem a vége
     this.renderer.setStyle(div, 'height', '100%');
-
-    // if (!disallowedDates || (multipleDays && !isSameDay(date, disallowedDates[1]) && !isSameDay(date, disallowedDates[0]))) {
 
     if (disallowedDates) {
       //intervallum
