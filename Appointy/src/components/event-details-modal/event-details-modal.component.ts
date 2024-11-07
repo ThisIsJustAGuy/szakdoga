@@ -111,9 +111,6 @@ export class EventDetailsModalComponent implements AfterContentInit, OnDestroy {
     this.eventForm.patchValue({end: end_time_text});
 
     this.subscribeToTimeChanges();
-    //TODO: edit oldalon se
-
-
   }
 
   subscribeToTimeChanges() {
