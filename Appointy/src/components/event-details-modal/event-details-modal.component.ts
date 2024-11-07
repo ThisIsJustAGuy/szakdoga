@@ -27,6 +27,7 @@ export class EventDetailsModalComponent implements AfterContentInit, OnDestroy {
   max_attendees: number = 0;
 
   private subs: (Subscription | undefined)[] = [];
+  controlsUpdating: boolean = false;
 
   constructor(
     private modalService: ModalService,
@@ -86,11 +87,14 @@ export class EventDetailsModalComponent implements AfterContentInit, OnDestroy {
         if (start < d_end && start > d_start) { //start a disallowed-on belül
           if (isSameDay(start, d_end)) {
             start = new Date(d_end);
-            if (start > end){
+            if (start > end) {
               end = new Date(start);
             }
           } else { //ha nem az end napján van, akkor fixen a startén
             start = new Date(d_start);
+            if (start > end) {
+              end = new Date(start);
+            }
           }
         }
         if (end < d_end && end > d_start) { //end a disallowed-on belül
@@ -103,31 +107,26 @@ export class EventDetailsModalComponent implements AfterContentInit, OnDestroy {
       }
     }
 
-    this.unsubscribeFromTimeChanges();
+    this.controlsUpdating = true;
 
     const start_time_text = start.getHours().toString().padStart(2, '0') + ':' + start.getMinutes().toString().padStart(2, '0');
     this.eventForm.patchValue({start: start_time_text});
     const end_time_text = end.getHours().toString().padStart(2, '0') + ':' + end.getMinutes().toString().padStart(2, '0');
     this.eventForm.patchValue({end: end_time_text});
 
-    this.subscribeToTimeChanges();
+    this.controlsUpdating = false;
+
   }
 
   subscribeToTimeChanges() {
     this.subs.push(this.eventForm.get('start')?.valueChanges.subscribe((newValue: string) => {
-      this.checkForTimeClashes(newValue, true);
+      if (!this.controlsUpdating)
+        this.checkForTimeClashes(newValue, true);
     }));
     this.subs.push(this.eventForm.get('end')?.valueChanges.subscribe((newValue: string) => {
-      this.checkForTimeClashes(newValue, false);
+      if (!this.controlsUpdating)
+        this.checkForTimeClashes(newValue, false);
     }));
-  }
-
-  unsubscribeFromTimeChanges() {
-    for (const sub of this.subs) {
-      if (sub instanceof Subscription) {
-        sub.unsubscribe();
-      }
-    }
   }
 
   locationChanged(event: Event) {
