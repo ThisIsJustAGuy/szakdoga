@@ -7,6 +7,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {ConstantService} from "../../services/constant.service";
 import {Subscription} from "rxjs";
 import {isSameDay} from "date-fns";
+import {StyleService} from "../../services/style.service";
 
 @Component({
   selector: 'Appointy-event-edit',
@@ -52,8 +53,10 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
     private emailService: EmailService,
     private snackBar: MatSnackBar,
     private router: Router,
-    protected constService: ConstantService
+    protected constService: ConstantService,
+    private styleService: StyleService
   ) {
+    this.styleService.loadStyles();
     this.eventForm = new FormGroup({});
   }
 

@@ -22,6 +22,7 @@ import {NgClass, NgIf} from "@angular/common";
 import {EventDetails} from "../classes/EventDetails";
 import {ConstantService} from "../services/constant.service";
 import {isSameDay} from "date-fns";
+import {StyleService} from "../services/style.service";
 
 @Component({
   selector: 'Appointy-home',
@@ -72,8 +73,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     protected constService: ConstantService,
     private renderer: Renderer2,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private styleService: StyleService
   ) {
+    this.styleService.loadStyles();
+
     this.currentDate = new Date();
     this.middleDate = new Date();
     this.now = new Date();

@@ -1,6 +1,6 @@
 @import "../../variables";
 .card{
-  color: $secondary-text-color;
+  color: var(--secondary-text-color);
   border: 1px solid white;
   padding: 6px;
   cursor: pointer;
@@ -9,11 +9,11 @@
 }
 
 .future_event{
-  background-color: $primary-color;
+  background-color: var(--primary-color);
 }
 
 .past_event {
-  background-color: $past-color;
+  background-color: var(--past-color);
 }
 
 small {
