@@ -7,8 +7,8 @@
 }
 
 .fullscreen_lite {
-  width: 100vw;
-  height: calc(100vh - $date-container-height - $column-top-padding - var(--hour-cell-height));
+  width: 100%;
+  height: calc(100% - $date-container-height - $column-top-padding - var(--hour-cell-height));
 }
 
 .scrollable {
