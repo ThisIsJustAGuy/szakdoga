@@ -257,7 +257,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         copiedDate.setMonth(copiedDate.getMonth() + 1);
         this.dates.push(copiedDate);
         nextMonthUsed = false;
-      } else if (prevMonthUsed) {
+      } else if (prevMonthUsed) { //előző hónapba lépünk
         copiedDate.setMonth(copiedDate.getMonth() - 1);
         this.dates.push(copiedDate);
         prevMonthUsed = false;
