@@ -166,8 +166,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   destroyEvents() {
     if (this.eventRefs) {
       for (const ref of this.eventRefs) {
-        this.appRef.detachView(ref.hostView);
-        ref.destroy();
+        if (ref) {
+          this.appRef.detachView(ref.hostView);
+          ref.destroy();
+        }
       }
     }
     if (this.nowMarkerRef) {
@@ -187,7 +189,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   fillWeekDays(locale: string) {
     let baseDate: Date = startOfWeek(new Date(), {weekStartsOn: 1}); //csak egy hétfő
     for (let i: number = 0; i < 7; i++) {
-      let day: string = baseDate.toLocaleDateString(locale, {weekday: 'long'});
+      let day: string = baseDate.toLocaleDateString(locale, {weekday: "long"});
       day = day[0].toUpperCase() + day.slice(1);
       this.weekdays.push(day);
       baseDate.setDate(baseDate.getDate() + 1);
@@ -225,9 +227,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     let prevMonthUsed: boolean = false;
     let nextMonthUsed: boolean = false;
 
-    const currentDateDay: number = this.currentDate.getDate();
-    const currentDay = this.currentDate.getDay();
-    this.startDate = currentDateDay - (currentDay != 0 ? currentDay : 7) + 1;
+    const currentDate: number = this.currentDate.getDate();
+    const currentDay: number = this.currentDate.getDay();
+    this.startDate = currentDate - (currentDay != 0 ? currentDay : 7) + 1;
 
     const lastDayOfLastMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 0).getDate();
     if (this.startDate < 1) { // hét eleje még az előző hónap
@@ -237,7 +239,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     let date: number = this.startDate - 1;
     const lastDayOfThisMonth: number = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0).getDate();
-
 
     for (let i = 0; i < this.weekdays.length; i++) {
       if (prevMonthUsed && lastDayOfLastMonth < date + 1) { // átlépünk az előző hónap végéről elsejére
@@ -252,12 +253,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       let copiedDate: Date = new Date(this.currentDate);
       copiedDate.setDate(date);
 
-      if (date < 23 && nextMonthUsed) { //kövi hónapba lépünk
+      if (nextMonthUsed) { //kövi hónapba lépünk
         copiedDate.setMonth(copiedDate.getMonth() + 1);
         this.dates.push(copiedDate);
-      } else if (date > 6 && prevMonthUsed) {
+        nextMonthUsed = false;
+      } else if (prevMonthUsed) {
         copiedDate.setMonth(copiedDate.getMonth() - 1);
         this.dates.push(copiedDate);
+        prevMonthUsed = false;
       } else {
         this.dates.push(copiedDate);
       }
