@@ -21,7 +21,7 @@ import {ModalService} from "../services/modal.service";
 import {NgClass, NgIf} from "@angular/common";
 import {EventDetails} from "../classes/EventDetails";
 import {ConstantService} from "../services/constant.service";
-import {isSameDay} from "date-fns";
+import {isSameDay, startOfWeek} from "date-fns";
 import {StyleService} from "../services/style.service";
 
 @Component({
@@ -185,7 +185,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   fillWeekDays(locale: string) {
-    let baseDate: Date = new Date(Date.UTC(2017, 0, 2)); //csak egy hétfői nap
+    let baseDate: Date = startOfWeek(new Date(), {weekStartsOn: 1}); //csak egy hétfő
     for (let i: number = 0; i < 7; i++) {
       let day: string = baseDate.toLocaleDateString(locale, {weekday: 'long'});
       day = day[0].toUpperCase() + day.slice(1);
