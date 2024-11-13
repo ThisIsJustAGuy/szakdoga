@@ -85,10 +85,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.now = new Date();
     this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
 
-    this.fillWeekDays('hu-HU');
+    this.fillWeekDays('en-US'); //alapbetölés
     this.fillDatesOfWeek();
 
     this.subs.push(this.constService.setupFinished.subscribe((_val: boolean) => {
+      this.weekdays = [];
+      this.fillWeekDays(this.constService.LOCALE); //ha már meg van a locale
       this.initCalendar();
       this.constsLoaded = true;
       this.calendarColumnLoaded.next(true);
