@@ -83,7 +83,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.currentDate = new Date();
     this.middleDate = new Date();
     this.now = new Date();
-    this.middleDate.setDate(this.currentDate.getDate() + (4 - this.currentDate.getDay()));
+    this.middleDate.setDate(this.currentDate.getDate() + (4 - (this.currentDate.getDay() == 0 ? 7 : this.currentDate.getDay())));
 
     this.fillWeekDays('en-US'); //alapbetölés
     this.fillDatesOfWeek();
