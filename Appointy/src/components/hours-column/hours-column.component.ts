@@ -13,14 +13,14 @@ export class HoursColumnComponent implements AfterViewInit{
   }
 
   scrollToStart(){
-    const scrollStart = document.getElementById("7");
+    const scrollTo = document.getElementById("7");
     const scrollable = document.getElementById('scrollable');
 
-    if (scrollStart && scrollable) {
+    if (scrollTo && scrollable) {
 
-      const { top } = scrollStart.getBoundingClientRect(); // scrollStart helye
+      const { top } = scrollTo.getBoundingClientRect(); // scrollTo helye
       const { top: scrollableTop } = scrollable.getBoundingClientRect(); // scrollable helye
-      const scrollY = top - scrollableTop; // mennyit kell scrollolni
+      const scrollY = top - scrollableTop; // mennyit kell görgetni
 
       scrollable.scrollBy({
         top: scrollY,

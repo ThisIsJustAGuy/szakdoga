@@ -260,7 +260,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.dates.push(copiedDate);
       }
     }
-
   }
 
   handleColumnLoad(value: boolean, _index: number) {

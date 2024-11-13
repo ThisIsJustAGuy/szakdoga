@@ -23,9 +23,9 @@
         <div class="hours_column">
           <Appointy-hours-column/>
         </div>
-        @for (i of dates; track $index) {
+        @for (date of dates; track $index) {
           <div class="d-flex flex-column grow" >
-            <Appointy-calendar-column [date]="dates[$index]" class="day_column" [id]="'calendarColumn' + i.getDate()" (loaded)="handleColumnLoad($event, $index)"/>
+            <Appointy-calendar-column [date]="date" class="day_column" [id]="'calendarColumn' + date.getDate()" (loaded)="handleColumnLoad($event, $index)"/>
           </div>
         }
       </div>

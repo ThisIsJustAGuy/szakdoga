@@ -1,5 +1,5 @@
 <div>
   @for (hour of [].constructor(24); track $index) {
-  <div class="hour-cell" [id]="getID($index)" (click)="openNewEventModal($index)"></div>
+    <div class="hour-cell" [id]="getID($index)" (click)="openNewEventModal($index)"></div>
   }
 </div>
