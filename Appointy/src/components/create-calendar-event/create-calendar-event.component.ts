@@ -71,28 +71,6 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
         this.attendees.push({'email': email});
       }
 
-      const checkboxes = [
-        {day_before: params['day_before'] == "true"},
-        {that_day: params['that_day'] == "true"},
-        {hour_before: params['hour_before'] == "true"}
-      ];
-      for (const box of checkboxes) {
-        const [key, value] = Object.entries(box)[0];
-        if (value) {
-          if (key == "day_before")
-            this.reminders.overrides.push({method: 'email', minutes: 24 * 60});
-          if (key == "that_day"){
-            let mins: number = 0;
-            const time_parts = this.start_time!.split(":");
-            mins = +time_parts[0]*60 + +time_parts[1];
-            this.reminders.overrides.push({method: 'email', minutes: mins});
-          }
-          if (key == "hour_before")
-            this.reminders.overrides.push({method: 'email', minutes: 60});
-        }
-      }
-
-
       const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
       this.returnValues = new CalendarEvent(
         this.summary ?? 'No summary',

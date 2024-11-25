@@ -26,10 +26,6 @@ export class EventAcceptComponent implements OnInit, OnDestroy{
   location: string | undefined;
   attendees: string | undefined;
 
-  day_before: boolean = false;
-  that_day: boolean = false;
-  hour_before: boolean = false;
-
   private subs: Subscription[] = [];
 
   constructor(
@@ -54,9 +50,6 @@ export class EventAcceptComponent implements OnInit, OnDestroy{
       this.description = params['description'];
       this.location = params['location'];
       this.attendees = params['attendees'];
-      this.day_before = params['day_before'] == "true";
-      this.that_day = params['that_day'] == "true";
-      this.hour_before = params['hour_before'] == "true";
 
       this.to_email = params['to_email'];
       this.from_email = params['reply_to'];
@@ -70,9 +63,6 @@ export class EventAcceptComponent implements OnInit, OnDestroy{
         description: this.description,
         location: this.location,
         attendees: this.attendees,
-        day_before: this.day_before,
-        that_day: this.that_day,
-        hour_before: this.hour_before
       };
 
       const startTime = new Date(this.appointment_date!);

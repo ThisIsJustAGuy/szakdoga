@@ -43,9 +43,6 @@ export class EmailService {
       description: formValue.description,
       location: formValue.location,
       attendees: formValue.attendees,
-      day_before: formValue.day_before,
-      that_day: formValue.that_day,
-      hour_before: formValue.hour_before,
     });
 
     const edit_route = this.constService.BASE_URL + "/" + this.constService.EDIT_ROUTE + "?" + params.toString();

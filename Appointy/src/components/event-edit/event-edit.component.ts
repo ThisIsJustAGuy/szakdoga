@@ -40,10 +40,6 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
   location: string | undefined;
   attendees: string | undefined;
 
-  day_before: boolean = false;
-  that_day: boolean = false;
-  hour_before: boolean = false;
-
   eventForm: FormGroup;
 
   events: CalendarEvent[] = [];
@@ -85,9 +81,6 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
       this.description = params['description'];
       this.location = params['location'];
       this.attendees = params['attendees'];
-      this.day_before = params['day_before'] == "true";
-      this.that_day = params['that_day'] == "true";
-      this.hour_before = params['hour_before'] == "true";
 
       this.to_email = params['to_email']; //ide küldjük vissza
       this.from_email = params['reply_to']; //innen küldjük
@@ -147,9 +140,6 @@ export class EventEditComponent implements AfterContentInit, OnDestroy {
     formValue.start = {dateTime: startTime.toISOString(), timeZone: timeZone};
     formValue.end = {dateTime: endTime.toISOString(), timeZone: timeZone};
     formValue.attendees = this.attendees;
-    formValue.day_before = this.day_before;
-    formValue.that_day = this.that_day;
-    formValue.hour_before = this.hour_before;
 
     this.emailService.sendMail(formValue, this.to_email, this.from_email)
       .then((response: EmailJSResponseStatus | any) => {
