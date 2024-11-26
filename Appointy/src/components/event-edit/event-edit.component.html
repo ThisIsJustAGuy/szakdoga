@@ -1,93 +1,95 @@
-<div class="d-flex flex-column justify-content-center align-items-center formContainer">
-  <h4>Suggest edits to existing appointment</h4>
+<div class="aligner">
+  <div class="d-flex flex-column justify-content-center align-items-center formContainer">
+    <h4>Suggest edits to existing appointment</h4>
 
-  <form [formGroup]="eventForm" (ngSubmit)="saveChanges()">
-    <div class="md-header">
-      <div class="d-flex flex-column summary_row">
-        <label for="summary">Summary *</label>
-        <input type="text" name="summary" id="summary" formControlName="summary">
-        @if (eventForm.get('summary')?.hasError('required')) {
-          <small class="text-danger">Summary is required.</small>
-        }
-      </div>
-    </div>
-
-    <div class="md-body">
-      <div class="d-flex flex-column">
-        <label for="description">Description</label>
-        <textarea name="description" id="description" formControlName="description" cols="30" rows="3"></textarea>
-
-        <div>
-          <div class="d-flex flex-column">
-            <label for="date">Date</label>
-            <input type="date" name="date" id="date" formControlName="date">
-            @if (eventForm.get('date')?.hasError('required')) {
-              <small class="text-danger">Date is required.</small>
-            }
-            @if (eventForm.hasError('appointmentOnDisallowedDay')) {
-              <small class="text-danger">Date cannot be on a disallowed day.</small>
-            }
-          </div>
-        </div>
-
-        <div class="d-flex flex-row justify-content-between time_input">
-          <div class="d-flex flex-column">
-            <label for="start">Start</label>
-            <input type="time" name="start" id="start" formControlName="start">
-          </div>
-          <div class="d-flex flex-column justify-content-end">
-            <pre> - </pre>
-          </div>
-          <div class="d-flex flex-column">
-            <label for="end">End</label>
-            <input type="time" name="end" id="end" formControlName="end">
-          </div>
-        </div>
-        @if (eventForm.get('start')?.hasError('required')) {
-          <small class="text-danger">Start is required.</small>
-        }
-        @if (eventForm.get('end')?.hasError('required')) {
-          <small class="text-danger">End is required.</small>
-        }
-        @if (eventForm.hasError('startBeforeEnd')) {
-          <small class="text-danger">Start time must be before end time.</small>
-        }
-        @if (eventForm.hasError('startInDisallowed')) {
-          <small class="text-danger">Start time must not be in a disallowed timeframe.</small>
-        }
-        @if (eventForm.hasError('endInDisallowed')) {
-          <small class="text-danger">End time must not be in a disallowed timeframe.</small>
-        }
-        @if (eventForm.hasError('timesEnvelopDisallowed')) {
-          <small class="text-danger">Start and End times must not envelop a disallowed timeframe.</small>
-        }
-        @if (eventForm.hasError('startInOverlap')) {
-          <small class="text-danger">Start time must not be overlapping with an other event.</small>
-        }
-        @if (eventForm.hasError('endInOverlap')) {
-          <small class="text-danger">End time must not be overlapping with an other event.</small>
-        }
-        @if (eventForm.hasError('timesEnvelopOverlap')) {
-          <small class="text-danger">Start and End times must not envelop an other event.</small>
-        }
-
-        <div class="d-flex flex-column">
-          <label for="location">Location *</label>
-          <select name="location" id="location" formControlName="location" class="form-select">
-            <option value="">No location</option>
-            @for (option of constService.LOCATIONS; track $index) {
-              <option [value]="option">{{ option }}</option>
-            }
-          </select>
-          @if (eventForm.get('location')?.hasError('required')) {
-            <small class="text-danger">Location is required.</small>
+    <form [formGroup]="eventForm" (ngSubmit)="saveChanges()">
+      <div class="md-header">
+        <div class="d-flex flex-column summary_row">
+          <label for="summary">Summary *</label>
+          <input type="text" name="summary" id="summary" formControlName="summary">
+          @if (eventForm.get('summary')?.hasError('required')) {
+            <small class="text-danger">Summary is required.</small>
           }
         </div>
       </div>
-    </div>
-    <div class="d-flex m-2 justify-content-center">
-      <button class="btn btn-sm btn-outline-secondary me-1" onclick="window.close()">Cancel</button>
-      <button type="submit" class="btn btn-ok ms-1" [disabled]="eventForm.invalid">OK</button>
-    </div>
-  </form>
+
+      <div class="md-body">
+        <div class="d-flex flex-column">
+          <label for="description">Description</label>
+          <textarea name="description" id="description" formControlName="description" cols="30" rows="3"></textarea>
+
+          <div>
+            <div class="d-flex flex-column">
+              <label for="date">Date</label>
+              <input type="date" name="date" id="date" formControlName="date">
+              @if (eventForm.get('date')?.hasError('required')) {
+                <small class="text-danger">Date is required.</small>
+              }
+              @if (eventForm.hasError('appointmentOnDisallowedDay')) {
+                <small class="text-danger">Date cannot be on a disallowed day.</small>
+              }
+            </div>
+          </div>
+
+          <div class="d-flex flex-row justify-content-between time_input">
+            <div class="d-flex flex-column">
+              <label for="start">Start</label>
+              <input type="time" name="start" id="start" formControlName="start">
+            </div>
+            <div class="d-flex flex-column justify-content-end">
+              <pre> - </pre>
+            </div>
+            <div class="d-flex flex-column">
+              <label for="end">End</label>
+              <input type="time" name="end" id="end" formControlName="end">
+            </div>
+          </div>
+          @if (eventForm.get('start')?.hasError('required')) {
+            <small class="text-danger">Start is required.</small>
+          }
+          @if (eventForm.get('end')?.hasError('required')) {
+            <small class="text-danger">End is required.</small>
+          }
+          @if (eventForm.hasError('startBeforeEnd')) {
+            <small class="text-danger">Start time must be before end time.</small>
+          }
+          @if (eventForm.hasError('startInDisallowed')) {
+            <small class="text-danger">Start time must not be in a disallowed timeframe.</small>
+          }
+          @if (eventForm.hasError('endInDisallowed')) {
+            <small class="text-danger">End time must not be in a disallowed timeframe.</small>
+          }
+          @if (eventForm.hasError('timesEnvelopDisallowed')) {
+            <small class="text-danger">Start and End times must not envelop a disallowed timeframe.</small>
+          }
+          @if (eventForm.hasError('startInOverlap')) {
+            <small class="text-danger">Start time must not be overlapping with an other event.</small>
+          }
+          @if (eventForm.hasError('endInOverlap')) {
+            <small class="text-danger">End time must not be overlapping with an other event.</small>
+          }
+          @if (eventForm.hasError('timesEnvelopOverlap')) {
+            <small class="text-danger">Start and End times must not envelop an other event.</small>
+          }
+
+          <div class="d-flex flex-column">
+            <label for="location">Location *</label>
+            <select name="location" id="location" formControlName="location" class="form-select">
+              <option value="">No location</option>
+              @for (option of constService.LOCATIONS; track $index) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+            @if (eventForm.get('location')?.hasError('required')) {
+              <small class="text-danger">Location is required.</small>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="d-flex m-2 justify-content-center">
+        <button class="btn btn-sm btn-outline-secondary me-1" onclick="window.close()">Cancel</button>
+        <button type="submit" class="btn btn-ok ms-1" [disabled]="eventForm.invalid">OK</button>
+      </div>
+    </form>
+  </div>
 </div>

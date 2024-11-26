@@ -1,9 +1,16 @@
 @import "../../variables";
 
 .formContainer{
-  height: 100%;
   margin: 5px;
   width: 450px;
+}
+
+.aligner{
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
 }
 
 .btn-ok{
