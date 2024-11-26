@@ -94,6 +94,7 @@ export class EmailService {
 
       request_data.mail_subject = deleted_request_data.mail_subject;
       request_data.mail_title = deleted_request_data.mail_title;
+      request_data.mail_text = deleted_request_data.mail_text;
       request_data.mail_details = deleted_request_data.mail_details;
       request_data.view_link = this.constService.BASE_URL;
 
