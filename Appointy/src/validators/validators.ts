@@ -7,7 +7,6 @@ export function startBeforeEndValidator(): ValidatorFn {
     const start = control.get('start')?.value;
     const end = control.get('end')?.value;
 
-
     if (start && end && start >= end) {
       return {startBeforeEnd: true};
     }
@@ -37,7 +36,7 @@ export function disallowedTimeValidator(disallowedDates: (string | string[])[], 
           return {timesEnvelopDisallowed: true};
         }
 
-      } else {
+      } else if (d_date) {
         if (isSameDay(d_date, start)) {
           return {appointmentOnDisallowedDay: true};
         }
@@ -55,6 +54,7 @@ export function overlapValidator(overlaps: boolean | boolean[], locations: strin
     let start: Date = getDateValue(startDate, control.get('start'), control.get('date'));
     let end: Date = getDateValue(endDate, control.get('end'), control.get('date'));
 
+      let r = null;
     if (Array.isArray(overlaps)) {
       for (let i = 0; i < overlaps.length; i++) {//overlaps és locations ugyan olyan hosszú kell legyen
         if (!overlaps[i] && control.get('location')?.value == locations[i]) {
@@ -62,37 +62,34 @@ export function overlapValidator(overlaps: boolean | boolean[], locations: strin
 
           for (const event of events) {
             if (event.location == locations[i]) { //locationok egyeznek
-
-              if (start < event.endDate && start > event.startDate) { //start overlap-el
-                return {startInOverlap: true};
-              }
-              if (end < event.endDate && end > event.startDate) { //end overlap-el
-                return {endInOverlap: true};
-              }
-              if (start <= event.startDate && end >= event.endDate) { // start és end közrefog egy másik eventet
-                return {timesEnvelopOverlap: true};
-              }
+              r = decideOverlap(start, end, event);
+              if (r != null) return r;
             }
           }
         }
       }
-    } else {
+      return r;
+    } else if(!overlaps) {
       for (const event of events) {
-        //semmivel nem engedjük az overlapet
-
-        if (start < event.endDate && start > event.startDate) {
-          return {startInOverlap: true};
-        }
-        if (end < event.endDate && end > event.startDate) {
-          return {endInOverlap: true};
-        }
-        if (start <= event.startDate && end >= event.endDate) {
-          return {timesEnvelopOverlap: true};
-        }
+        r = decideOverlap(start, end, event);
       }
+      return r;
     }
     return null;
   };
+}
+
+function decideOverlap(start: Date, end:Date, event:CalendarEvent){
+  if (start < event.endDate && start > event.startDate) { //start overlapel
+    return {startInOverlap: true};
+  }
+  if (end < event.endDate && end > event.startDate) { //end overlapel
+    return {endInOverlap: true};
+  }
+  if (start <= event.startDate && end >= event.endDate) {// start és end közrefog egy másik eventet
+    return {timesEnvelopOverlap: true};
+  }
+  return null;
 }
 
 function getDateValue(date: Date | undefined, timeValue: AbstractControl | null, dateValue: AbstractControl | null): Date {

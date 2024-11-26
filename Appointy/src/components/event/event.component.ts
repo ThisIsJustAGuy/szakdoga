@@ -39,10 +39,10 @@ export class EventComponent {
 
     this.cdr.detectChanges();
 
-    this.updateSize();
+    this.updatePosition();
   }
 
-  updateSize() {
+  updatePosition() {
     const card = document.getElementById(this.id)!;
     const cellHeight: number = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-cell-height'));
     this.setMarginTop(card, cellHeight);
