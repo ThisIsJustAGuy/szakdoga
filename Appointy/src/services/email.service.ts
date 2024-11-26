@@ -145,7 +145,6 @@ export class EmailService {
     }
 
     // configban megadni, ha saját backendre küldené a contentet, és onnan küldene e-mailt.
-    // nyilván dokumentálni kell milyen paramétereket vár a fogadó route
     // ha nincs megadva configban email backend url akkor menjünk az emailJS-re
     if (this.constService.EMAIL_BACKEND_URL && this.constService.EMAIL_BACKEND_URL != "") {
       return lastValueFrom(this.http.post(this.constService.EMAIL_BACKEND_URL, request_data));
