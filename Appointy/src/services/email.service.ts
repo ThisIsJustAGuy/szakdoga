@@ -150,7 +150,7 @@ export class EmailService {
     if (this.constService.EMAIL_BACKEND_URL && this.constService.EMAIL_BACKEND_URL != "") {
       return lastValueFrom(this.http.post(this.constService.EMAIL_BACKEND_URL, request_data));
     } else {
-      return emailjs.send(this.constService.SERVICE_ID, template_id, request_data, this.constService.USER_ID);
+      return emailjs.send(this.constService.SERVICE_ID, template_id, request_data, this.constService.EMAILJS_PUBLIC_KEY);
     }
   }
 }

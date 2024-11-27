@@ -72,12 +72,6 @@ export class ConstantService implements OnDestroy {
     return this._FINISHED_TEMPLATE_ID;
   }
 
-  private _USER_ID: string = "";
-  get USER_ID(): string {
-    return this._USER_ID;
-  }
-
-
   private _BASE_URL: string = "";
   get BASE_URL(): string {
     return this._BASE_URL;
@@ -101,11 +95,6 @@ export class ConstantService implements OnDestroy {
   private _CREATE_EVENT_ROUTE: string = ""; // új felvételnél
   get CREATE_EVENT_ROUTE(): string {
     return this._CREATE_EVENT_ROUTE;
-  }
-
-  private _EDIT_EVENT_ROUTE: string = ""; // meglévő (már felvett) szerk-nél
-  get EDIT_EVENT_ROUTE(): string {
-    return this._EDIT_EVENT_ROUTE;
   }
 
   private _COMPANY_EMAIL: string = "";
@@ -155,14 +144,12 @@ export class ConstantService implements OnDestroy {
       this._SERVICE_ID = data.serviceID ?? "";
       this._IN_PROGRESS_TEMPLATE_ID = data.inProgressTemplateID ?? "";
       this._FINISHED_TEMPLATE_ID = data.finishedTemplateID ?? "";
-      this._USER_ID = data.userID ?? "";
+      this._COMPANY_EMAIL = data.companyEmail ?? "";
       this._BASE_URL = data.baseURL ?? "";
       this._EDIT_ROUTE = data.editRoute ?? "";
       this._ACCEPT_ROUTE = data.acceptRoute ?? "";
       this._DELETE_ROUTE = data.deleteRoute ?? "";
       this._CREATE_EVENT_ROUTE = data.createEventRoute ?? "";
-      this._EDIT_EVENT_ROUTE = data.editEventRoute ?? "";
-      this._COMPANY_EMAIL = data.companyEmail ?? "";
       this._LOCATIONS = data.locations ?? [];
       this._MAX_ATTENDEES = data.maxAttendees ?? 100; // ha egy szám akkor global, ha tömb, akkor az adott indexű calendarra vonatkozik
       this._DISALLOWED_DATES = data.disallowedDates ?? []; //a tömb elemei: ha string egész nap, ha tömb intervallum
