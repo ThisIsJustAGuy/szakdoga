@@ -5,6 +5,7 @@ import {EmailJSResponseStatus} from "emailjs-com";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ConstantService} from "../../services/constant.service";
 import {Subscription} from "rxjs";
+import {StyleService} from "../../services/style.service";
 
 @Component({
   selector: 'Appointy-event-delete',
@@ -31,8 +32,11 @@ export class EventDeleteComponent implements OnInit, OnDestroy {
     private emailService: EmailService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private constService: ConstantService
-    ) {}
+    private constService: ConstantService,
+    private styleService: StyleService
+    ) {
+    this.styleService.loadStyles();
+  }
 
   ngOnInit() {
     this.subs.push(this.constService.setupFinished.subscribe((_res:boolean) => this.initEmail()));

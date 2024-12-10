@@ -44,8 +44,9 @@ export class EventComponent {
 
   updatePosition() {
     const card = document.getElementById(this.id)!;
+    const parent = card.parentElement!;
     const cellHeight: number = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hour-cell-height'));
-    this.setMarginTop(card, cellHeight);
+    this.setMarginTop(parent, cellHeight);
     this.setHeight(card, cellHeight);
     this.setColor(card);
   }

@@ -1,15 +1,7 @@
-
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
 @include mat.core();
 
-// Define the theme object.
 $Appointy-theme: mat.define-theme((
   color: (
     theme-type: light,
@@ -21,19 +13,10 @@ $Appointy-theme: mat.define-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 :root {
   @include mat.all-component-themes($Appointy-theme);
 }
 
-// Comment out the line below if you want to use the pre-defined typography utility classes.
-// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
-// @include mat.typography-hierarchy($Appointy-theme);
-
-// Comment out the line below if you want to use the deprecated `color` inputs.
-// @include mat.color-variants-backwards-compatibility($Appointy-theme);
 @import "variables";
 
 html, body {
@@ -52,43 +35,5 @@ html, body {
   width: 800px;
 }
 
-.event_container {
-  width: 100%;
-  z-index: 9;
-}
-.event_container:nth-child(2) {
-  width: 75%;
-  margin-left: -75%;
-}
-.event_container:nth-child(3) {
-  width: 50%;
-  margin-left: -50%;
-}
-.event_container:nth-child(4) {
-  width: 33%;
-  margin-left: -33%;
-}
-
-.now_container {
-  width: 100%;
-  z-index: 10;
-  height: 2px;
-  position: absolute;
-}
-
-.disallowed_date {
-  position: absolute;
-  top:0;
-  left:0;
-  background: repeating-linear-gradient(
-      -45deg,
-      hsl(360 0% 90% / 0.75),
-      hsl(360 0% 90% / 0.75) 10px,
-      hsl(360 0% 85% / 0.75) 10px,
-      hsl(360 0% 85% / 0.75) 20px
-  );
-}
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-Appointy-home {max-height: 500px;}

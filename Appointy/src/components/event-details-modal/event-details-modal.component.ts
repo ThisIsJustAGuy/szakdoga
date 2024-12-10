@@ -47,7 +47,7 @@ export class EventDetailsModalComponent implements AfterContentInit {
       description: new FormControl(''),
       start: new FormControl(this.eventDetails.calendarEvent?.startDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
       end: new FormControl(this.eventDetails.calendarEvent?.endDate?.getHours().toString().padStart(2, '0') + ":00", [Validators.required]),
-      location: new FormControl('', [Validators.required]),
+      location: new FormControl('no_location', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       attendees: new FormControl(''),
     }, { validators:

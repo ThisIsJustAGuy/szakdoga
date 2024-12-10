@@ -23,6 +23,7 @@ export class StyleService {
       .catch(() => {
         this.applyDefaultStyle();
       });
+    this.applyRequiredStyles();
   }
 
   applyDefaultStyle() {
@@ -38,4 +39,48 @@ export class StyleService {
   `;
     document.head.appendChild(style);
   }
+
+  applyRequiredStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+    .event_container {
+      width: 100%;
+      z-index: 9;
+    }
+    .event_container:nth-child(2) {
+      width: 75%;
+      margin-left: -75%;
+    }
+    .event_container:nth-child(3) {
+      width: 50%;
+      margin-left: -50%;
+    }
+    .event_container:nth-child(4) {
+      width: 33%;
+      margin-left: -33%;
+    }
+
+    .now_container {
+      width: 100%;
+      z-index: 10;
+      height: 2px;
+      position: absolute;
+    }
+
+    .disallowed_date {
+      position: absolute;
+      top:0;
+      left:0;
+      background: repeating-linear-gradient(
+          -45deg,
+          hsl(360 0% 90% / 0.75),
+          hsl(360 0% 90% / 0.75) 10px,
+          hsl(360 0% 85% / 0.75) 10px,
+          hsl(360 0% 85% / 0.75) 20px
+      );
+    }
+  `;
+    document.head.appendChild(style);
+  }
+
 }

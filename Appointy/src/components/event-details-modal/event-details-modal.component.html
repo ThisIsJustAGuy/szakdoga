@@ -72,7 +72,7 @@
             <label for="location">Location *</label>
             <select name="location" id="location" formControlName="location" class="form-select"
                     (change)="locationChanged($event)">
-              <option value="" disabled>No location</option>
+              <option value="no_location">No location</option>
               @for (option of constService.LOCATIONS; track $index) {
                 <option [value]="option">{{ option }}</option>
               }
@@ -104,8 +104,11 @@
         @if (eventDetails.calendarEvent?.description) {
           <p>{{ eventDetails.calendarEvent?.description }}</p>
         }
-        @if (eventDetails.calendarEvent?.location) {
+        @if (eventDetails.calendarEvent?.location && eventDetails.calendarEvent?.location != "no_location") {
           <p>Location: {{ eventDetails.calendarEvent?.location }}</p>
+        }
+        @else {
+          <p>No Location</p>
         }
 
         <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>

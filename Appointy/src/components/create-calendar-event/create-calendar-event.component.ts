@@ -6,6 +6,7 @@ import {CalendarEvent} from "../../classes/CalendarEvent";
 import {GoogleLoginProvider, GoogleSigninButtonModule, SocialAuthService} from "@abacritt/angularx-social-login";
 import {ConstantService} from "../../services/constant.service";
 import {Subscription} from "rxjs";
+import {StyleService} from "../../services/style.service";
 
 declare var gapi: any
 
@@ -22,19 +23,17 @@ declare var gapi: any
 
 export class CreateCalendarEventComponent implements OnInit, OnDestroy {
 
-  appointment_date: string | undefined;
-  start_time: string | undefined;
-  end_time: string | undefined;
-  summary: string | undefined;
-  description: string | undefined;
-  location: string | undefined;
-  attendees: [{ email: string }] | undefined;
+  isStored: boolean = false;
 
   to_email: string | undefined;
 
   returnValues: CalendarEvent = new CalendarEvent();
 
   private subs: Subscription[] = [];
+  private redirectUri = "http://localhost:4200/create-calender-event";
+  private scope = "ZohoCalendar.event.CREATE";
+
+  creationCalendar: string = "";
 
   constructor(
     private route: ActivatedRoute,
@@ -42,55 +41,103 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     private authService: SocialAuthService,
-    private constService: ConstantService
+    private constService: ConstantService,
+    private styleService: StyleService
   ) {
+    this.styleService.loadStyles();
   }
 
   ngOnInit() {
-    this.subs.push(this.constService.setupFinished.subscribe((_res:boolean) => this.createEvent()));
+    this.subs.push(this.constService.setupFinished.subscribe((_res: boolean) => {
+      this.readVariables();
+      if (!this.isStored) {
+        this.getVariables();
+      }
+      else{
+        this.getToken();
+      }
+      this.setCreationCalendar();
+    }));
     this.constService.setConstants();
   }
 
-  createEvent(){
+  getToken(){
+    this.subs.push(this.route.fragment.subscribe((fragment) => {
+      const access_token = new URLSearchParams(fragment!).get("access_token")!;
+      this.submitEvent(access_token);
+    }));
+  }
+
+  setCreationCalendar(){
+    this.creationCalendar = this.calendarService.getCreationCalendar(this.returnValues);
+
+    if (this.creationCalendar === "google") {
+      this.createGoogleEvent();
+    }
+  }
+
+  getVariables() {
     this.subs.push(this.route.queryParams.subscribe(params => {
-      this.appointment_date = params['appointment_date'];
-      this.start_time = params['start_time'];
-      this.end_time = params['end_time'];
-      this.summary = params['summary'];
-      this.description = params['description'];
-      this.location = params['location'];
+      const appointment_date = params['appointment_date'];
+      const start_time = params['start_time'];
+      const end_time = params['end_time'];
+      const summary = params['summary'];
+      const description = params['description'];
+      let location = params['location'];
+      if (location == "no_location") {
+        location = "";
+      }
 
       this.to_email = params['to_email'];
       const attends = params['attendees'].length > 0 ? params['attendees'].split(',') : [];
-      this.attendees = [{'email': this.to_email!}];
+      let attendees: [{ email: string }] = [{'email': this.to_email!}];
       for (const email of attends) {
-        this.attendees.push({'email': email});
+        attendees.push({'email': email});
       }
+
 
       const time_zone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
       this.returnValues = new CalendarEvent(
-        this.summary ?? 'No summary',
+        summary ?? 'No summary',
         {dateTime: "", timeZone: ""},
         {dateTime: "", timeZone: ""},
-        this.description,
-        this.location,
-        this.attendees,
+        description,
+        location,
+        attendees,
       );
 
-      const startTime = new Date(this.appointment_date!);
-      startTime.setHours(parseInt(this.start_time!.split(':')[0]));
-      startTime.setMinutes(parseInt(this.start_time!.split(':')[1]));
+      const startTime = new Date(appointment_date!);
+      startTime.setHours(parseInt(start_time!.split(':')[0]));
+      startTime.setMinutes(parseInt(start_time!.split(':')[1]));
       startTime.setSeconds(0);
 
-      const endTime = new Date(this.appointment_date!);
-      endTime.setHours(parseInt(this.end_time!.split(':')[0]));
-      endTime.setMinutes(parseInt(this.end_time!.split(':')[1]));
+      const endTime = new Date(appointment_date!);
+      endTime.setHours(parseInt(end_time!.split(':')[0]));
+      endTime.setMinutes(parseInt(end_time!.split(':')[1]));
       endTime.setSeconds(0);
 
       this.returnValues.start = {dateTime: startTime.toISOString(), timeZone: time_zone};
       this.returnValues.end = {dateTime: endTime.toISOString(), timeZone: time_zone};
+      this.storeVariables();
     }));
+  }
 
+  storeVariables() {
+    if (this.returnValues) {
+      localStorage.setItem("return_values", JSON.stringify(this.returnValues));
+    }
+  }
+
+  readVariables() {
+    const values = localStorage.getItem("return_values");
+    if (values) {
+      this.returnValues = JSON.parse(values);
+      this.isStored = true;
+      localStorage.removeItem("return_values");
+    }
+  }
+
+  createGoogleEvent() {
     this.subs.push(this.authService.authState.subscribe(() => {
 
       gapi.load('client', () => {
@@ -100,22 +147,29 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
         }).then(() => {
 
           this.authService.getAccessToken(GoogleLoginProvider.PROVIDER_ID).then(() => {
-
-            this.calendarService.createEvent(this.returnValues).then(() => {
-
-              const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close', {
-                duration: 8000,
-              });
-
-              this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
-            });
+            this.submitEvent();
           });
         })
       });
     }));
   }
 
-  ngOnDestroy(){
+  createZohoEvent() {
+    window.location.href = `https://accounts.zoho.eu/oauth/v2/auth?response_type=token&client_id=${this.constService.ZOHO_CLIENT_ID}&scope=${this.scope}&redirect_uri=${this.redirectUri}`;
+  }
+
+  submitEvent(access_token?: string) {
+    this.calendarService.createEvent(this.returnValues, access_token).then(() => {
+
+      const snackBarRef = this.snackBar.open('Event added to calendar. You will be redirected.', 'Close', {
+        duration: 8000,
+      });
+
+      // this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
+    });
+  }
+
+  ngOnDestroy() {
     for (const sub of this.subs) {
       sub.unsubscribe();
     }

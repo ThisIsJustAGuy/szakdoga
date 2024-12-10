@@ -19,8 +19,8 @@ export const appConfig: ApplicationConfig = {
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              data.clientID,
-              {scopes: data.scope}
+              data.googleClientID,
+              {scopes: "https://www.googleapis.com/auth/calendar"}
             )
           }
         ],

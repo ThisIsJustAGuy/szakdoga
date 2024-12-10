@@ -75,7 +75,7 @@
           <div class="d-flex flex-column">
             <label for="location">Location *</label>
             <select name="location" id="location" formControlName="location" class="form-select">
-              <option value="">No location</option>
+              <option value="no_location">No location</option>
               @for (option of constService.LOCATIONS; track $index) {
                 <option [value]="option">{{ option }}</option>
               }
