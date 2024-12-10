@@ -9,7 +9,6 @@ export class CalendarEvent {
     public description?: string,
     public location?: string,
     public attendees?: [{email: string}],
-    public reminders?:{'useDefault': false, 'overrides':{'method': 'email', 'minutes': number}[]},
   ) {
     this.startDate = new Date(start.dateTime);
     this.endDate = new Date(end.dateTime);

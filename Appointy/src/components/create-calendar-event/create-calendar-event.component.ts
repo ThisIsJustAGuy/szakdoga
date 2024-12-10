@@ -29,10 +29,6 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
   description: string | undefined;
   location: string | undefined;
   attendees: [{ email: string }] | undefined;
-  reminders: {
-    useDefault: false,
-    overrides: { method: 'email'; minutes: number }[]
-  } = {useDefault: false, overrides: []};
 
   to_email: string | undefined;
 
@@ -79,7 +75,6 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
         this.description,
         this.location,
         this.attendees,
-        this.reminders
       );
 
       const startTime = new Date(this.appointment_date!);
