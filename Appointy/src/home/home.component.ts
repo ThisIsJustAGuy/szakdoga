@@ -122,15 +122,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   initCalendar() {
     this.subs.push(this.calendarService.getCalendarEvents()
       .subscribe((res) => {
-        for (let i = 1; i < res.length; i++) {
-          if (typeof res[i] !== "string") {
-            res[0].items = [...res[0].items, ...res[i].items];
-            console.log(res[0].items);
-          }
-          else {
-            res[0].items = [...res[0].items, ...this.parseICal(res[i])]
-          }
-        }
+        this.formatResults(res);
         this.displayEvents(res[0].items);
       }))
   }
@@ -250,11 +242,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.subs.push(this.calendarService.getCalendarEvents(this.currentDate)
       .subscribe((res) => {
-        for (let i = 1; i < res.length; i++) {
-          res[0].items = [...res[0].items, ...res[i].items];
-        }
+        this.formatResults(res);
         this.displayEvents(res[0].items);
       }));
+  }
+
+  formatResults(res: any[]){
+    for (let i = 1; i < res.length; i++) {
+      if (typeof res[i] !== "string") {
+        res[0].items = [...res[0].items, ...res[i].items];
+      }
+      else {
+        res[0].items = [...res[0].items, ...this.parseICal(res[i])]
+      }
+    }
   }
 
   fillDatesOfWeek() {
