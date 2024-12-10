@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }));
     this.constService.setConstants();
 
-    this.calendarColumnLoaded.subscribe({
+    this.subs.push(this.calendarColumnLoaded.subscribe({
       next: () => {
         this.completedColumnLoads++;
         if (this.completedColumnLoads === 8 || (this.completedColumnLoads === 7 && this.constsLoaded)) {
@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.completedColumnLoads = 0;
         }
       }
-    });
+    }));
   }
 
   initEventDetailsModal() {
@@ -123,10 +123,45 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.subs.push(this.calendarService.getCalendarEvents()
       .subscribe((res) => {
         for (let i = 1; i < res.length; i++) {
-          res[0].items = [...res[0].items, ...res[i].items];
+          if (typeof res[i] !== "string") {
+            res[0].items = [...res[0].items, ...res[i].items];
+            console.log(res[0].items);
+          }
+          else {
+            res[0].items = [...res[0].items, ...this.parseICal(res[i])]
+          }
         }
         this.displayEvents(res[0].items);
       }))
+  }
+
+  parseICal(ical: string){
+    const events: string[] = ical.split('BEGIN:VEVENT');
+    const eventData: CalendarEvent[] = [];
+
+    for (let event of events.slice(1)){
+      const summary = (event.match(/SUMMARY:(.*)/) ?? [])[1];
+      const description = (event.match(/DESCRIPTION:(.*)/) ?? [])[1].replace(/\\n/g, '');
+      const location = (event.match(/LOCATION:(.*)/) ?? [])[1];
+      const start = this.convertICalDate((event.match(/DTSTART:(.*)/) ?? [])[1]);
+      const end = this.convertICalDate((event.match(/DTEND:(.*)/) ?? [])[1]);
+      eventData.push(new CalendarEvent(summary, start, end, description, location));
+    }
+    return eventData;
+  }
+
+  convertICalDate(inputDate: string){
+    const formattedDate = inputDate.replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z');
+    const date = new Date(formattedDate);
+
+    const offsetMinutes = date.getTimezoneOffset();
+    const offsetHours = Math.floor(Math.abs(offsetMinutes)/60);
+    const offsetSign = offsetMinutes > 0 ? '-' : '+'
+    const offset = `${offsetSign}${String(offsetHours).padStart(2, '0')}:00`;
+
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    return {dateTime: date.toISOString().split('.')[0] + offset, timeZone: timeZone}
   }
 
   displayEvents(results: CalendarEvent[]) {

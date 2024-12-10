@@ -32,9 +32,16 @@ export class CalendarService {
 
     const requests: Observable<any>[] = [];
 
+    const corsProxy = 'https://cors-ek6q.onrender.com/';
+
     for (let i = 0; i < this.constService.CALENDAR_IDS.length; i++) {
-      const url = `https://www.googleapis.com/calendar/v3/calendars/${this.constService.CALENDAR_IDS[i]}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.constService.API_KEY}`;
-      requests.push(this.http.get(url));
+      let url = this.constService.CALENDAR_IDS[i];
+      if (this.constService.CALENDAR_IDS[i].includes("google")) {
+        url = `https://www.googleapis.com/calendar/v3/calendars/${this.constService.CALENDAR_IDS[i]}/events?timeMin=${startDateTime}&timeMax=${endDateTime}&key=${this.constService.API_KEY}`;
+        requests.push(this.http.get(url));
+      } else {
+        requests.push(this.http.get(corsProxy + url, {responseType: 'text'}));
+      }
     }
 
     return forkJoin(requests).pipe(
@@ -63,11 +70,13 @@ export class CalendarService {
         i = index;
     }
 
-    await gapi.client.calendar.events.insert({
-      'calendarId': this.constService.CALENDAR_IDS[i],
-      'resource': event,
-      'sendNotifications': true
-    }).execute((e: any) => console.log(e));
+    if (this.constService.CALENDAR_IDS[i].includes("google")) {
+      await gapi.client.calendar.events.insert({
+        'calendarId': this.constService.CALENDAR_IDS[i],
+        'resource': event,
+        'sendNotifications': true
+      }).execute((e: any) => console.log(e));
+    }
   }
 
   getCalendarEventsThisDay(date: Date = new Date()): Observable<any[]> {

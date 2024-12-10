@@ -109,7 +109,7 @@
         }
 
         <small>{{ eventDetails.calendarEvent?.startDate?.getFullYear() }}.{{ startMonth.padStart(2, '0') }}.{{ eventDetails.calendarEvent?.startDate?.getDate()?.toString()?.padStart(2, '0') }}.</small>
-        <small>{{ eventDetails.calendarEvent?.startDate?.getHours() }}:{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }} - {{ eventDetails.calendarEvent?.endDate?.getHours() }}:{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
+        <small>{{ eventDetails.calendarEvent?.startDate?.getHours()?.toString()?.padStart(2, '0') }}:{{ eventDetails.calendarEvent?.startDate?.getMinutes()?.toString()?.padStart(2, '0') }} - {{ eventDetails.calendarEvent?.endDate?.getHours()?.toString()?.padStart(2, '0') }}:{{ eventDetails.calendarEvent?.endDate?.getMinutes()?.toString()?.padStart(2, '0') }}</small>
       }
     </div>
     <div class="md-footer">
