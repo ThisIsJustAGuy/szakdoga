@@ -167,7 +167,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < this.calendarEvents.length; i++) {
       // helyes id-val rendelkező kocka megtalálása
-      startElement = document.getElementById(this.calendarEvents[i].startDate.getFullYear() + "." + this.calendarEvents[i].startDate.getMonth() + "." + this.calendarEvents[i].startDate.getDate() + "." + this.calendarEvents[i].startDate.getHours());
+      startElement = document.getElementById('i' + this.calendarEvents[i].startDate.getFullYear() + "." + this.calendarEvents[i].startDate.getMonth() + "." + this.calendarEvents[i].startDate.getDate() + "." + this.calendarEvents[i].startDate.getHours());
 
       if (startElement) {
         // ne írják egymást felül, ha egy kockába kell többet tenni
@@ -382,7 +382,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.nowMarkerRef?.destroy();
     }
 
-    const startElement: HTMLElement | null = document.getElementById(this.now.getFullYear() + "." + this.now.getMonth() + "." + this.now.getDate() + "." + this.now.getHours());
+    const startElement: HTMLElement | null = document.getElementById('i' + this.now.getFullYear() + "." + this.now.getMonth() + "." + this.now.getDate() + "." + this.now.getHours());
 
     if (startElement) {
       const nowContainer = document.createElement('div');

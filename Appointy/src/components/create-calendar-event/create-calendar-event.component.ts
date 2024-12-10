@@ -30,10 +30,10 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
   returnValues: CalendarEvent = new CalendarEvent();
 
   private subs: Subscription[] = [];
-  private redirectUri = "http://localhost:4200/create-calender-event";
-  private scope = "ZohoCalendar.event.CREATE";
+  // private redirectUri = "http://localhost:4200/create-calender-event";
+  // private scope = "ZohoCalendar.event.CREATE";
 
-  creationCalendar: string = "";
+  // creationCalendar: string = "";
 
   constructor(
     private route: ActivatedRoute,
@@ -49,32 +49,31 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subs.push(this.constService.setupFinished.subscribe((_res: boolean) => {
-      this.readVariables();
-      if (!this.isStored) {
+      // this.readVariables();
+      // this.setCreationCalendar();
+      // if (!this.isStored) {
         this.getVariables();
-      }
-      else{
-        this.getToken();
-      }
-      this.setCreationCalendar();
+      // } else if (this.creationCalendar == "zoho") {
+      //   this.getToken();
+      // }
     }));
     this.constService.setConstants();
   }
 
-  getToken(){
-    this.subs.push(this.route.fragment.subscribe((fragment) => {
-      const access_token = new URLSearchParams(fragment!).get("access_token")!;
-      this.submitEvent(access_token);
-    }));
-  }
-
-  setCreationCalendar(){
-    this.creationCalendar = this.calendarService.getCreationCalendar(this.returnValues);
-
-    if (this.creationCalendar === "google") {
-      this.createGoogleEvent();
-    }
-  }
+  // getToken() {
+  //   this.subs.push(this.route.fragment.subscribe((fragment) => {
+  //     const access_token = new URLSearchParams(fragment!).get("access_token")!;
+  //     this.submitEvent(access_token);
+  //   }));
+  // }
+  //
+  // setCreationCalendar() {
+  //   this.creationCalendar = this.calendarService.getCreationCalendar(this.returnValues);
+  //
+  //   if (this.creationCalendar = "google") {
+  //     this.createGoogleEvent();
+  //   }
+  // }
 
   getVariables() {
     this.subs.push(this.route.queryParams.subscribe(params => {
@@ -118,24 +117,28 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
 
       this.returnValues.start = {dateTime: startTime.toISOString(), timeZone: time_zone};
       this.returnValues.end = {dateTime: endTime.toISOString(), timeZone: time_zone};
-      this.storeVariables();
+
+      this.createGoogleEvent();
+      // if (this.creationCalendar == "zoho") {
+      //   this.storeVariables();
+      // }
     }));
   }
 
-  storeVariables() {
-    if (this.returnValues) {
-      localStorage.setItem("return_values", JSON.stringify(this.returnValues));
-    }
-  }
+  // storeVariables() {
+  //   if (this.returnValues) {
+  //     localStorage.setItem("return_values", JSON.stringify(this.returnValues));
+  //   }
+  // }
 
-  readVariables() {
-    const values = localStorage.getItem("return_values");
-    if (values) {
-      this.returnValues = JSON.parse(values);
-      this.isStored = true;
-      localStorage.removeItem("return_values");
-    }
-  }
+  // readVariables() {
+  //   const values = localStorage.getItem("return_values");
+  //   if (values) {
+  //     this.returnValues = JSON.parse(values);
+  //     this.isStored = true;
+  //     localStorage.removeItem("return_values");
+  //   }
+  // }
 
   createGoogleEvent() {
     this.subs.push(this.authService.authState.subscribe(() => {
@@ -154,9 +157,9 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
     }));
   }
 
-  createZohoEvent() {
-    window.location.href = `https://accounts.zoho.eu/oauth/v2/auth?response_type=token&client_id=${this.constService.ZOHO_CLIENT_ID}&scope=${this.scope}&redirect_uri=${this.redirectUri}`;
-  }
+  // createZohoEvent() {
+  //   window.location.href = `https://accounts.zoho.eu/oauth/v2/auth?response_type=token&client_id=${this.constService.ZOHO_CLIENT_ID}&scope=${this.scope}&redirect_uri=${this.redirectUri}`;
+  // }
 
   submitEvent(access_token?: string) {
     this.calendarService.createEvent(this.returnValues, access_token).then(() => {
@@ -165,7 +168,7 @@ export class CreateCalendarEventComponent implements OnInit, OnDestroy {
         duration: 8000,
       });
 
-      // this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
+      this.subs.push(snackBarRef.afterDismissed().subscribe(() => this.router.navigateByUrl(this.constService.REDIRECT_URL)));
     });
   }
 

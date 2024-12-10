@@ -2,11 +2,11 @@
   <h2>This appointment request has been accepted by both parties.</h2>
   <p>The event will be registered to the calendar.</p>
 
-  @if (creationCalendar == "google" && !isStored) {
+<!--  @if (creationCalendar == "google" && !isStored) {-->
     <asl-google-signin-button type='standard' size='medium'>
     </asl-google-signin-button>
-  }
-  @else if (creationCalendar === "zoho" && !isStored){
-    <button class="btn btn-sm btn-primary zoho-login" (click)="createZohoEvent()">Log in to Zoho</button>
-  }
+<!--  }-->
+<!--  @else if (creationCalendar === "zoho" && !isStored){-->
+<!--    <button class="btn btn-sm btn-primary zoho-login" (click)="createZohoEvent()">Log in to Zoho</button>-->
+<!--  }-->
 </div>

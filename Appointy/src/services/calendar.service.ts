@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {forkJoin, map, Observable} from 'rxjs';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {CalendarEvent} from "../classes/CalendarEvent";
 import {ConstantService} from "./constant.service";
 
@@ -64,58 +64,68 @@ export class CalendarService {
     return end;
   }
 
-  async createEvent(event: CalendarEvent, access_token?: string) {
+  async createEvent(event: CalendarEvent) {
     let i: number = 0;
     for (let index = 0; index < this.constService.LOCATIONS.length; index++) {
       if (this.constService.LOCATIONS[index] == event.location)
         i = index;
     }
+    if (this.constService.CALENDAR_IDS[i].includes("zoho")){
+      for (let index = 0; index < this.constService.CALENDAR_IDS.length; index++) {
+        if (this.constService.CALENDAR_IDS[index].includes("google"))
+          i = index;
+      }
+    }
 
+
+
+    // if (this.constService.CALENDAR_IDS[i].includes("zoho") && access_token) {
+    //   const headers = new HttpHeaders({
+    //     "Authorization": `Bearer ${access_token}`,
+    //   });
+    //
+    //   let start = event.start.dateTime.replaceAll('-', '').replaceAll(':', '');
+    //   start = start.slice(0, start.indexOf('.')) + 'Z';
+    //   let end = event.end.dateTime.replaceAll('-', '').replaceAll(':', '');
+    //   end = end.slice(0, end.indexOf('.')) + 'Z';
+    //
+    //
+    //   const eventData = {
+    //     "dateandtime": {
+    //       "timezone": event.start.timeZone,
+    //       "start": start,
+    //       "end": end
+    //     },
+    //     "title": event.summary,
+    //     "attendees": event.attendees,
+    //     "description": event.description,
+    //     "location": event.location,
+    //     "notify_attendee": 2
+    //   }
+    //   const param = new URLSearchParams();
+    //   param.set("eventdata", JSON.stringify(eventData));
+    //   const url = this.corsProxy + `https://calendar.zoho.eu/api/v1/calendars/${this.constService.ZOHO_UID}/events?${param.toString()}`;
+    //   this.http.post(url, eventData, {headers}).subscribe((r) => console.log(r));
+    // }
+    console.log(this.constService.CALENDAR_IDS[i]);
     if (this.constService.CALENDAR_IDS[i].includes("google")) {
       await gapi.client.calendar.events.insert({
         'calendarId': this.constService.CALENDAR_IDS[i],
         'resource': event,
         'sendNotifications': true
       }).execute((e: any) => console.log(e));
-    } else if (this.constService.CALENDAR_IDS[i].includes("zoho") && access_token) {
-      const headers = new HttpHeaders({
-        "Authorization": `Bearer ${access_token}`,
-      });
-
-      let start = event.start.dateTime.replaceAll('-', '').replaceAll(':', '');
-      start = start.slice(0, start.indexOf('.')) + 'Z';
-      let end = event.end.dateTime.replaceAll('-', '').replaceAll(':', '');
-      end = end.slice(0, end.indexOf('.')) + 'Z';
-
-
-      const eventData = {
-        "dateandtime": {
-          "timezone": event.start.timeZone,
-          "start": start,
-          "end": end
-        },
-        "title": event.summary,
-        "attendees": event.attendees,
-        "description": event.description,
-        "location": event.location,
-        "notify_attendee": 2
-      }
-      const param = new URLSearchParams();
-      param.set("eventdata", JSON.stringify(eventData));
-      const url = this.corsProxy + `https://calendar.zoho.eu/api/v1/calendars/${this.constService.ZOHO_UID}/events?${param.toString()}`;
-      this.http.post(url, eventData, {headers}).subscribe((r) => console.log(r));
     }
   }
 
-  getCreationCalendar(event: CalendarEvent) {
-    let i: number = 0;
-    for (let index = 0; index < this.constService.LOCATIONS.length; index++) {
-      if (this.constService.LOCATIONS[index] == event.location)
-        i = index;
-    }
-
-    return this.constService.CALENDAR_IDS[i].includes("google") ? "google" : "zoho";
-  }
+  // getCreationCalendar(event: CalendarEvent) {
+  //   let i: number = 0;
+  //   for (let index = 0; index < this.constService.LOCATIONS.length; index++) {
+  //     if (this.constService.LOCATIONS[index] == event.location)
+  //       i = index;
+  //   }
+  //
+  //   return this.constService.CALENDAR_IDS[i].includes("google") ? "google" : "zoho";
+  // }
 
   getCalendarEventsThisDay(date: Date = new Date()): Observable<any[]> {
     const startOfDay = new Date(date);

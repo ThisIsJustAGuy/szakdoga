@@ -24,7 +24,7 @@ export class CalendarColumnComponent implements OnChanges{
   }
 
   getID(hour: number): string {
-    return this.date.getFullYear() + "." + this.date.getMonth() + "." + this.date.getDate() + "." + hour;
+    return 'i' + this.date.getFullYear() + "." + this.date.getMonth() + "." + this.date.getDate() + "." + hour;
   }
 
   openNewEventModal(hour: number) {
