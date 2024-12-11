@@ -1,5 +1,5 @@
 {
-  "redirectURL": "https://thisisjustaguy.github.io/szakdoga/",
+  "redirectURL": "http://localhost:4200",
   "locale": "hu-HU",
   "apiKey": "AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc",
   "googleClientID": "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com",
@@ -16,7 +16,7 @@
   "inProgressTemplateID": "template_h0h44bn",
   "finishedTemplateID": "template_99ge21g",
   "companyEmail": "b.in.shape01@gmail.com",
-  "baseURL": "https://thisisjustaguy.github.io/szakdoga/",
+  "baseURL": "http://localhost:4200",
   "editRoute": "edit-event",
   "acceptRoute": "accept-event",
   "deleteRoute": "delete-event",
