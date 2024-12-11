@@ -22,7 +22,7 @@ export const routes: Routes = [
     canActivate: [],
   },
   {
-    path: 'create-calender-event',
+    path: 'create-calendar-event',
     loadComponent: ()=> import('../components/create-calendar-event/create-calendar-event.component').then((c) => c.CreateCalendarEventComponent),
     canActivate: [],
   },

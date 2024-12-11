@@ -7,7 +7,7 @@ export class StyleService {
 
   loadStyles() {
 
-    const userStylePath = 'appointy.scss';
+    const userStylePath = 'appointy.css';
 
     fetch(userStylePath)
       .then(response => {

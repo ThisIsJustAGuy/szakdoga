@@ -25,21 +25,6 @@ export class ConstantService implements OnDestroy {
     return this._API_KEY;
   }
 
-  private _GOOGLE_CLIENT_ID = '';
-  get GOOGLE_CLIENT_ID(): string {
-    return this._GOOGLE_CLIENT_ID;
-  }
-
-  private _ZOHO_CLIENT_ID = '';
-  get ZOHO_CLIENT_ID(): string {
-    return this._ZOHO_CLIENT_ID;
-  }
-
-  private _ZOHO_UID = '';
-  get ZOHO_UID(): string {
-    return this._ZOHO_UID
-  }
-
   private _CALENDAR_IDS: string[] = [];
   get CALENDAR_IDS(): string[] {
     return this._CALENDAR_IDS;
@@ -140,9 +125,6 @@ export class ConstantService implements OnDestroy {
       this._REDIRECT_URL = data.redirectURL ?? "";
       this._LOCALE = data.locale ?? "en-US";
       this._API_KEY = data.apiKey ?? "";
-      this._GOOGLE_CLIENT_ID = data.googleClientID ?? "";
-      this._ZOHO_CLIENT_ID = data.zohoClientID ?? "";
-      this._ZOHO_UID = data.zohoUID ?? "";
       this._CALENDAR_IDS = data.calendarIDs ?? [];
       this._DISCOVERY_DOCS = data.discoveryDocs ?? "";
       this._EMAIL_BACKEND_URL = data.emailBackendURL ?? ""; //ez nincs a jsonben

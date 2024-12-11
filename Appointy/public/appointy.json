@@ -1,10 +1,8 @@
 {
-  "redirectURL": "http://localhost:4200",
+  "redirectURL": "http://localhost:80",
   "locale": "hu-HU",
   "apiKey": "AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc",
   "googleClientID": "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com",
-  "zohoClientID": "1000.ICBC41YK123AFAMY1PIAZ6C9V7H96Y",
-  "zohoUID": "d10438c4b8f14adc9a8c69221a919907",
   "calendarIDs": [
     "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com",
     "76f7dd5c8f8118dbb084270794f6d24d6998ff95dafb423138b36f2c094d69e2@group.calendar.google.com",
@@ -15,12 +13,12 @@
   "serviceID": "service_vsa8qqp",
   "inProgressTemplateID": "template_h0h44bn",
   "finishedTemplateID": "template_99ge21g",
-  "companyEmail": "b.in.shape01@gmail.com",
-  "baseURL": "http://localhost:4200",
+  "companyEmail": "appointy24@gmail.com",
+  "baseURL": "http://localhost:80",
   "editRoute": "edit-event",
   "acceptRoute": "accept-event",
   "deleteRoute": "delete-event",
-  "createEventRoute": "create-calender-event",
+  "createEventRoute": "create-calendar-event",
   "locations": ["A location", "B location", "C location"],
   "maxAttendees": [5, 2, 3],
   "disallowedDates": [
