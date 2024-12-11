@@ -1,0 +1,43 @@
+{
+  "redirectURL": "https://thisisjustaguy.github.io/szakdoga/",
+  "locale": "hu-HU",
+  "apiKey": "AIzaSyBGYpsRXbu27SlAYE93OLs4BXz4ADI3FXc",
+  "googleClientID": "703772084263-ngg5a6tfdd920qh60gf694ouodr718gc.apps.googleusercontent.com",
+  "zohoClientID": "1000.ICBC41YK123AFAMY1PIAZ6C9V7H96Y",
+  "zohoUID": "d10438c4b8f14adc9a8c69221a919907",
+  "calendarIDs": [
+    "0bad952e0331a7207fc33d2a2289cc7567000bceaf1c509ca255f9a984814738@group.calendar.google.com",
+    "76f7dd5c8f8118dbb084270794f6d24d6998ff95dafb423138b36f2c094d69e2@group.calendar.google.com",
+    "https://calendar.zoho.eu/ical/zz080112305b8a3b6a9d6764053ded59d23e73a3b730bb055fa1659276988a6784e196f66b4b8fda88f6064b6920703dde09d3faa1/pvt_1e40c9a66a194eb4999e88239a55246f"
+  ],
+  "discoveryDocs": "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+  "emailjsPublicKey": "_KlycIcm2HzL4TL3v",
+  "serviceID": "service_vsa8qqp",
+  "inProgressTemplateID": "template_h0h44bn",
+  "finishedTemplateID": "template_99ge21g",
+  "companyEmail": "b.in.shape01@gmail.com",
+  "baseURL": "https://thisisjustaguy.github.io/szakdoga/",
+  "editRoute": "edit-event",
+  "acceptRoute": "accept-event",
+  "deleteRoute": "delete-event",
+  "createEventRoute": "create-calender-event",
+  "locations": ["A location", "B location", "C location"],
+  "maxAttendees": [5, 2, 3],
+  "disallowedDates": [
+    "2024-11-07",
+    [
+      "2024-11-09T10:22:00Z",
+      "2024-11-09T13:40:00Z"
+    ],
+    [
+      "2024-11-04T14:08:00Z",
+      "2024-11-06T08:40:00Z"
+    ],
+    "2024-12-11",
+    [
+      "2024-12-13T10:00:00Z",
+      "2024-12-13T11:20:00Z"
+    ]
+  ],
+  "allowOverlaps": [false, true, true]
+}
