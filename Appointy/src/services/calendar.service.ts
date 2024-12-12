@@ -70,7 +70,7 @@ export class CalendarService {
       if (this.constService.LOCATIONS[index] == event.location)
         i = index;
     }
-    if (!(this.constService.CALENDAR_IDS.length < i+1) || (this.constService.CALENDAR_IDS[i] && this.constService.CALENDAR_IDS[i].includes("zoho"))){
+    if (this.constService.CALENDAR_IDS.length < i || (this.constService.CALENDAR_IDS[i] && this.constService.CALENDAR_IDS[i].includes("zoho"))){
       for (let index = 0; index < this.constService.CALENDAR_IDS.length; index++) {
         if (this.constService.CALENDAR_IDS[index].includes("google"))
           i = index;
