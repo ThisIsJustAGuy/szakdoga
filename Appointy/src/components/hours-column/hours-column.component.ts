@@ -13,7 +13,7 @@ export class HoursColumnComponent implements AfterViewInit{
   }
 
   scrollToStart(){
-    const scrollTo = document.getElementById("7");
+    const scrollTo = document.getElementById("h7");
     const scrollable = document.getElementById('scrollable');
 
     if (scrollTo && scrollable) {

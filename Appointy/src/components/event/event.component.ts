@@ -51,10 +51,10 @@ export class EventComponent {
     this.setColor(card);
   }
 
-  setMarginTop(card: HTMLElement, cellHeight: number) {
-    if (card) {
+  setMarginTop(parent: HTMLElement, cellHeight: number) {
+    if (parent) {
       const marginTop: number = cellHeight * (this.startMinute / 60);
-      card.style.marginTop = `${marginTop}rem`;
+      parent.style.marginTop = `${marginTop}rem`;
     }
   }
 
