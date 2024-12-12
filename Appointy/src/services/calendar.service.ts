@@ -67,13 +67,17 @@ export class CalendarService {
   async createEvent(event: CalendarEvent) {
     let i: number = 0;
     for (let index = 0; index < this.constService.LOCATIONS.length; index++) {
-      if (this.constService.LOCATIONS[index] == event.location)
+      if (this.constService.LOCATIONS[index] == event.location){
         i = index;
+        break;
+      }
     }
     if (this.constService.CALENDAR_IDS.length < i || (this.constService.CALENDAR_IDS[i] && this.constService.CALENDAR_IDS[i].includes("zoho"))){
       for (let index = 0; index < this.constService.CALENDAR_IDS.length; index++) {
-        if (this.constService.CALENDAR_IDS[index].includes("google"))
+        if (this.constService.CALENDAR_IDS[index].includes("google")){
           i = index;
+          break;
+        }
       }
     }
 
